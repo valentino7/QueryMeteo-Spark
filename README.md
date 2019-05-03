@@ -1,7 +1,7 @@
 # spark_project
 
 
-File: 
+File (in Data directory): 
 
   * __city attributes.csv__: per ogni città, viene riportata la latitudine e la longitudine;
 
