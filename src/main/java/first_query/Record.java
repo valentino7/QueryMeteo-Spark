@@ -1,49 +1,40 @@
 package first_query;
 
+
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.time.LocalDate;
+
+import java.util.HashMap;
+
 
 public class Record implements Serializable {
 
-    private ArrayList<Integer> city;
-    private String date;
-    private String hour;
-    private ArrayList<String> description;
+    private LocalDate date;
+    private HashMap<Integer,String> weather_city; //città, descrizione
+
 
     public Record() {
-        this.city = new ArrayList<>();
-        this.description = new ArrayList<>();
+
     }
 
-    public ArrayList<Integer> getCity() {
-        return city;
-    }
-
-    public void setCity(ArrayList<Integer> city) {
-        this.city = city;
-    }
-
-    public String getHour() {
-        return hour;
-    }
-
-    public void setHour(String hour) {
-        this.hour = hour;
-    }
-
-    public ArrayList<String> getDescription() {
-        return description;
-    }
-
-    public void setDescription(ArrayList<String> description) {
-        this.description = description;
-    }
-
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public HashMap<Integer, String> getWeather_city() {
+        return weather_city;
+    }
+
+    public void setWeather_city(HashMap<Integer, String> weather_city) {
+        this.weather_city = weather_city;
+    }
+
+    @Override
+    public String toString() {
+        return this.date.toString() + "\t" + this.weather_city.toString();
     }
 }

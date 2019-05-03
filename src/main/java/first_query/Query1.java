@@ -2,15 +2,21 @@ package first_query;
 
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function2;
+import scala.Tuple2;
 
+
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 public class Query1 {
 
     private static final Pattern SPACE = Pattern.compile(" ");
-    private static String inputPath = "data/weather_description.csv";
+    private static String inputPath = "data/city_attributes.csv";
+    private static String inputPath2 = "data/weather_description.csv";
 
     public static void main(String[] args) {
 
@@ -25,10 +31,22 @@ public class Query1 {
                 .setAppName("Hello World");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
-        JavaRDD<String> data = sc.textFile(inputPath);
-        JavaRDD<Record> value = Query1Preprocessing.preprocessDataset(sc);
+        JavaRDD<String> cityRDD = sc.textFile(inputPath)
+                .map(s -> s.split(",")[0]);
 
-        //value.saveAsObjectFile(outputPath);
+
+
+        //System.out.println(cityRDD.collect());
+
+        JavaRDD<Record> weatherRDD = Query1Preprocessing.preprocessDataset(sc);
+
+       /* for(Record r: data.collect()){
+            System.out.println(r + "\n");
+        }*/
+
+        //JavaRDD<Record> d = data1.filter()
+
+        //data.saveAsObjectFile(outputPath);
 
         sc.stop();
     }
