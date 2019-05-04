@@ -8,13 +8,24 @@ import java.util.Locale;
 
 public class RecordParser {
 
-    public static Record parseCSV(String csvLine ) {
+    private ArrayList<String> cities;
+
+    public RecordParser(String strCities){
+        this.cities = new ArrayList<>();
+        String[] splitCity = strCities.split(",");
+        for (int i = 1; i < splitCity.length; i++){
+            this.cities.add(splitCity[i]);
+        }
+        System.out.println("constructor"+this.cities);
+    }
+
+    public Record parseCSV(String csvLine ) {
 
         Record record = null;
         String[] csvValues = csvLine.split(",");
         record = new Record();
 
-        HashMap<Integer,String> map = new HashMap<>();
+        HashMap<String,String> map = new HashMap<>();
         for (int i = 0; i < csvValues.length; i++){
             if ( i == 0) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -22,7 +33,7 @@ public class RecordParser {
                 record.setDate(date);
             }
             else {
-                map.put(i,csvValues[i]);
+                map.put(this.cities.get(i-1),csvValues[i]);
             }
         }
 

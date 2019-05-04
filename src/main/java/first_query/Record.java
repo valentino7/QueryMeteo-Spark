@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class Record implements Serializable {
 
     private LocalDate date;
-    private HashMap<Integer,String> weather_city; //città, descrizione
+    private HashMap<String,String> weather_city; //città, descrizione
 
 
     public Record() {
@@ -25,11 +25,11 @@ public class Record implements Serializable {
         this.date = date;
     }
 
-    public HashMap<Integer, String> getWeather_city() {
+    public HashMap<String, String> getWeather_city() {
         return weather_city;
     }
 
-    public void setWeather_city(HashMap<Integer, String> weather_city) {
+    public void setWeather_city(HashMap<String, String> weather_city) {
         this.weather_city = weather_city;
     }
 

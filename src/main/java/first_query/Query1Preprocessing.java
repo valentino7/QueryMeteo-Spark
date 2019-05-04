@@ -8,6 +8,7 @@ import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 
@@ -21,32 +22,36 @@ public class  Query1Preprocessing {
         // da rivedere
         JavaRDD<String> rawInputFile = sc.textFile(pathToFile);
 
-        Function2 takeHeader= new Function2<Integer, Iterator<String>, Iterator<String>>(){
+        Function2 takeHeader= new Function2<Integer, Iterator<String>, Iterator<Record>>(){
             @Override
-            public Iterator<String> call(Integer ind, Iterator<String> iterator) throws Exception {
+            public Iterator<Record> call(Integer ind, Iterator<String> iterator) throws Exception {
                 if(ind==0 && iterator.hasNext()){
+
+                    //parser città
+                    RecordParser p = new RecordParser(iterator.next());
                     iterator.next();
-                    System.out.println("sono dentro id = " + ind );
-                    return iterator;
-                }else {
-                    return iterator;
+
+                    //parser meteo
+                    ArrayList<Record> rdd=new ArrayList<>();
+                    while(iterator.hasNext()){
+                        rdd.add(p.parseCSV(iterator.next()));
+                    }
+
+                    return rdd.iterator();
                 }
+                return null;
             }
         };
-        JavaRDD<String> inputRdd = rawInputFile.mapPartitionsWithIndex(takeHeader, false);
+        JavaRDD<Record> inputRdd = rawInputFile.mapPartitionsWithIndex(takeHeader, false);
 
-        // da rivedere
         inputRdd.collect();
+        //stampo solo la data per controllare il contenuto
+        for(Record r: inputRdd.collect()) {
+            System.out.println(r.getDate() + "\n");
+            break;
+        }
 
-        JavaRDD<String> weatherFile = sc.textFile(pathToFile);
-
-        /*for(String r: weatherFile.collect()) {
-            System.out.println(r + "\n");
-        }*/
-
-        JavaRDD<Record> records = weatherFile.map( line -> RecordParser.parseCSV(line));
-
-        return records;
+        return inputRdd;
 
 
 
