@@ -48,6 +48,7 @@ public class  Query1Preprocessing {
         //stampo solo la data per controllare il contenuto
         for(Record r: inputRdd.collect()) {
             System.out.println(r.getDate() + "\n");
+
             break;
         }
 
