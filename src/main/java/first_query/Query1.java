@@ -9,6 +9,8 @@ import org.apache.spark.api.java.function.Function2;
 import scala.Tuple2;
 
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
@@ -40,11 +42,18 @@ public class Query1 {
 
         JavaRDD<Record> weatherRDD = Query1Preprocessing.preprocessDataset(sc);
 
-       /* for(Record r: data.collect()){
-            System.out.println(r + "\n");
-        }*/
+        JavaPairRDD<LocalDate, Record> pairs =
+                weatherRDD.mapToPair(s -> new Tuple2<>(s.getDate(), s));
 
-        //JavaRDD<Record> d = data1.filter()
+
+
+        //filtro per mese
+        //JavaRDD<Record> d = weatherRDD.filter(m -> m.getDate().getMonthValue()> 2 && m.getDate().getMonthValue()<6);
+
+        for(Tuple2 r: pairs.collect()) {
+            System.out.println(r._2 + "\n");
+
+        }
 
         //data.saveAsObjectFile(outputPath);
 
