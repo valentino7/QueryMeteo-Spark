@@ -10,13 +10,14 @@ public class RecordParser {
 
     private ArrayList<String> cities;
 
+
     public RecordParser(String strCities){
         this.cities = new ArrayList<>();
         String[] splitCity = strCities.split(",");
         for (int i = 1; i < splitCity.length; i++){
             this.cities.add(splitCity[i]);
         }
-        System.out.println("constructor"+this.cities);
+        //System.out.println("constructor"+this.cities);
     }
 
     public Record parseCSV(String csvLine ) {
