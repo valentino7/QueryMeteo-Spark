@@ -33,7 +33,30 @@ public class Query1_with_tuple {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> weatherFile = sc.textFile(inputPath2);
-        String fisrtLine = weatherFile.first();
+        String firstLine = weatherFile.first();
+        List<String> citiesArray = new ArrayList<>(Arrays.asList(firstLine.split(",")));
+        citiesArray.remove(0);
+
+        //creo rdd di città
+        JavaRDD<String> cities = sc.parallelize(citiesArray);
+
+        //formato (nome città, indice)
+        JavaPairRDD<String, Integer> citiesWithIndex = cities.zipWithIndex().
+                mapToPair(x -> new Tuple2<String, Integer>(x._1, x._2.intValue()));
+
+
+        //change index, la chiave diventa l'indice della città e il valore il nome della città
+        JavaPairRDD<Integer, String> citiesWithInvertedIndex = citiesWithIndex.mapToPair(new PairFunction<Tuple2<String, Integer>, Integer, String>() {
+            @Override
+            public Tuple2<Integer, String> call(Tuple2<String, Integer> stringIntegerTuple2) throws Exception {
+                return new Tuple2<>(stringIntegerTuple2._2, stringIntegerTuple2._1);
+            }
+        });
+
+        for (Tuple2<Integer, String> x : citiesWithInvertedIndex.collect()) {
+            System.out.println(x._1 + "   " + x._2);
+        }
+
       /*  JavaRDD<String[]> csvRecords = weatherFile
                 .filter( csvLine -> !csvLine.equals(fisrtLine) )
                 .map(s -> s.split(",", -1) );
@@ -71,8 +94,11 @@ public class Query1_with_tuple {
         });
 */
 
+      /*
+      parsing del file in rdd nella forma (anno, mese, giorno, indice città; sky is clear)
+       */
         JavaPairRDD<Tuple4<Integer,Integer,Integer,Integer>,Integer> tupleP = weatherFile
-                .filter( csvLine -> !csvLine.equals(fisrtLine) )
+                .filter( csvLine -> !csvLine.equals(firstLine) )
                 .flatMapToPair(new PairFlatMapFunction<String, Tuple4<Integer, Integer, Integer, Integer>, Integer>() {
                     @Override
                     public Iterator<Tuple2<Tuple4<Integer, Integer, Integer, Integer>, Integer>> call(String s) throws Exception {
@@ -96,12 +122,11 @@ public class Query1_with_tuple {
                         object._1._2() == 3 ||
                         object._1._2() == 4 ) );
 
-        // somma tutti i valori della descrizione per a chiave ( anno, mese, giorno, città) -> ( count delle ore in un giornio in cui c'è tempo sereno )
+        //count delle ore in cui il tempo è sereno
         JavaPairRDD<Tuple4<Integer,Integer,Integer,Integer>,Integer> reducedTuple = filteredTuple.reduceByKey( (integer, integer2) -> integer+integer2) ;
 
 
-        // io ho ( anno, mese, giorno, città ) -> valore (
-        // devo ottenere (anno, mese, città ) valore ( dove 1 se il giorno è sereno, o 0 altrimenti )
+        // io ho ( anno, mese, giorno, città ; 0/1) -> 1 se sky il clear, 0 else
         JavaPairRDD<Tuple3<Integer,Integer,Integer>, Integer> mapByMonth = reducedTuple.mapToPair(new PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, Integer>, Integer>, Tuple3<Integer, Integer, Integer>, Integer>() {
             @Override
             public Tuple2<Tuple3<Integer, Integer, Integer>, Integer> call(Tuple2<Tuple4<Integer, Integer, Integer, Integer>, Integer> tuple) throws Exception {
@@ -117,6 +142,7 @@ public class Query1_with_tuple {
         // sommo sui mesi, contando i giorni sereni in un mese
         JavaPairRDD<Tuple3<Integer,Integer,Integer>, Integer> reducedByMonth = mapByMonth.reduceByKey((integer, integer2) -> integer+integer2);
 
+        //TODO: possono essere fatte insieme queste operazioni di conteggio e filtering?
         JavaPairRDD<Tuple3<Integer,Integer,Integer>, Integer> resultFiltered = reducedByMonth.filter(new Function<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>, Boolean>() {
             @Override
             public Boolean call(Tuple2<Tuple3<Integer, Integer, Integer>, Integer> tuple) throws Exception {
@@ -127,12 +153,41 @@ public class Query1_with_tuple {
             }
         });
 
-        JavaPairRDD<Tuple2<Integer,Integer>, Integer> result = resultFiltered.mapToPair(new PairFunction<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>, Tuple2<Integer, Integer>, Integer>() {
+
+        //compatto la data in una stringa per avere (data, indice di città)
+        JavaPairRDD<String, Integer> result = resultFiltered.mapToPair(new PairFunction<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>, String, Integer>() {
+            @Override
+            public Tuple2<String, Integer> call(Tuple2<Tuple3<Integer, Integer, Integer>, Integer> tuple) throws Exception {
+                String yearStr = tuple._1._1().toString();
+                String monthStr = tuple._1._2().toString();
+                String date = yearStr.concat("/").concat(monthStr);
+                return new Tuple2<>(date, tuple._1._3());
+            }
+        });
+
+        //Change index, la chiave diventa l'indice della città e il valore la data
+        JavaPairRDD<Integer, String> invertedIndexResult = result.mapToPair(new PairFunction<Tuple2<String, Integer>, Integer, String>() {
+            @Override
+            public Tuple2<Integer, String> call(Tuple2<String, Integer> stringIntegerTuple2) throws Exception {
+                return new Tuple2<>(stringIntegerTuple2._2, stringIntegerTuple2._1);
+            }
+
+        });
+
+
+        for (Tuple2<Integer, String> x: invertedIndexResult.collect()) {
+            System.out.println(x._1 + "   " + x._2);
+        }
+
+
+        /*JavaPairRDD<Tuple2<Integer,Integer>, Integer> result = resultFiltered.mapToPair(new PairFunction<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>, Tuple2<Integer, Integer>, Integer>() {
             @Override
             public Tuple2<Tuple2<Integer, Integer>, Integer> call(Tuple2<Tuple3<Integer, Integer, Integer>, Integer> tuple) throws Exception {
                 return new Tuple2<>(new Tuple2<>(tuple._1._1(),tuple._1._2()), tuple._1._3());
             }
-        });
+        });*/
+
+
 
 
         // mappo da ( anno , mese , città ) in ( anno -> città ) con la condizione di cercare i mesi con almeno 15  giorni di cielo sereno
@@ -146,11 +201,38 @@ public class Query1_with_tuple {
             }
         });*/
 
-        // anno -> lista di città in interi
+
+
+         //join dei due rdd con chiave in comune
+         JavaPairRDD<Integer, Tuple2<String, String>> joinResult = invertedIndexResult.join(citiesWithInvertedIndex);
+
+         for(Tuple2<Integer, Tuple2<String, String>> x :joinResult.collect()) {
+             System.out.println(x._1 + "  " + x._2._1() +"   " + x._2._2());
+         }
+
+        /*
+           esclusione dell'indice di città, la chiave è la data e il valore è la città
+           raggruppo per chiave
+           sorting per chiave
+         */
+         JavaPairRDD<String, Iterable<String>> citiesWithClearSky = joinResult.mapToPair(new PairFunction<Tuple2<Integer, Tuple2<String, String>>, String, String>() {
+             @Override
+             public Tuple2<String, String> call(Tuple2<Integer, Tuple2<String, String>> integerTuple2Tuple2) throws Exception {
+                 return new Tuple2<>(integerTuple2Tuple2._2._1, integerTuple2Tuple2._2._2);
+             }
+         }).groupByKey().sortByKey();
+
+
+        for(Tuple2<String, Iterable<String>> x :citiesWithClearSky.collect()) {
+            System.out.println(x._1 + "  " + x._2);
+        }
+
+
+        /*// anno -> lista di città in interi
         Map<Tuple2<Integer,Integer>,Iterable<Integer>> map = result.groupByKey().collectAsMap();
         for ( Tuple2<Integer,Integer> i : map.keySet()){
-            System.out.println("Anno: "+ i._1() +"\t" +"Mese: "+ i._2() +"\t" +"Città: "+"\t" +map.get(i));
-        }
+            System.out.println("Anno: "+ i._1() +"\t" +"Mese: "+ i._2() +"\t" +"Indici Città: "+"\t" +map.get(i));
+        }*/
 
 /*
         List<WeatherDescription> list = weather.collect();
