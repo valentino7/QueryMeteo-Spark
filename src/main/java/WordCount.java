@@ -13,7 +13,7 @@ public class WordCount {
 
     public static void main(String[] args){
 
-        String inputPath = "data/city_attributes.csv";
+        String inputPath = "hdfs://192.168.64.5:54310/uscita/part-00000";
         String outputPath = "output";
         if (args.length > 0)
             outputPath = args[0];
@@ -29,6 +29,7 @@ public class WordCount {
          */
 //       JavaRDD<String> input = sc.textFile("hdfs://HOST:PORT/input");
         JavaRDD<String> input = sc.textFile(inputPath) ;
+        System.out.println(input);
         /*JavaRDD<String> input = sc.parallelize(Arrays.asList(
                                         "if you prick us do we not bleed",
                                         "if you tickle us do we not laugh",
