@@ -104,10 +104,8 @@ public class Query1 {
                 })
                 .reduceByKey(Integer::sum)
                 .filter((Function<Tuple2<Tuple3<Integer, Integer, String>, Integer>, Boolean>) tuple -> {
-                    if (tuple._2 >= 15) {// città con più di 15 giorni al mese con tempo sereno
-                        return true;
-                    }
-                    else return false;
+                    // città con più di 15 giorni al mese con tempo sereno
+                    return tuple._2 >= 15;
                 })
                 .mapToPair((PairFunction<Tuple2<Tuple3<Integer, Integer, String>, Integer>, String, String>) tuple -> {
                     String yearStr = tuple._1._1().toString();

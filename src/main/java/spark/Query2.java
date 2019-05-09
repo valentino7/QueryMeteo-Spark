@@ -57,14 +57,8 @@ public class Query2 {
                         list.add( new Tuple2<>(new Tuple3<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), citiesArray.get(i-1) ), new Tuple2<>( d ,1.0) ) );
                     }
                     return list.iterator();
-
                 })
-                .filter((Function<Tuple2<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>>, Boolean>) v1 -> {
-                    if(v1._2._1() == 0.0) {
-                        return false;
-                    } else
-                        return true;
-                });
+                .filter((Function<Tuple2<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>>, Boolean>) v1 -> v1._2._1() != 0.0);
         // Somme per stesso mese, città e anno
         // (Anno,Mese,Città) -> (Somma di temperature, count temperature )
         JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > sum_count = dataset.reduceByKey((tuple1, tuple2) -> new Tuple2<>(tuple1._1()+tuple2._1(), tuple1._2()+ tuple2._2()));
