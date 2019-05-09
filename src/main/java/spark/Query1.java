@@ -34,18 +34,6 @@ public class Query1 {
         citiesArray.remove(0);
 
         /*
-        Creation of RDD<String> from Header of csv file
-        */
-        JavaRDD<String> cities = sc.parallelize(citiesArray);
-
-        /*
-        Mapping RDD<String> to RDD<K,V> where:
-            K = position of cities in the  array
-            V = cities name
-         */
-        JavaPairRDD<Integer, String> citiesWithIndex = cities.zipWithIndex()
-                .mapToPair(x -> new Tuple2<>(x._2.intValue(), x._1));
-        /*
         .filter : Remove Header
 
         .flatMapToPair :
@@ -77,19 +65,11 @@ public class Query1 {
             RDD<(year,month,city), count>  on count: take the Month with at least 15 clear day
 
         .mapToPair :
-            RDD<(year,month,city), count> to RDD<K,V> where :
-                K = year/month in string format
-                V = city in integer format
-
-        .join : join 2 different RDD on same Key : index of city
-
-        .mapToPair :
-            RDD<Index , (year/month , city) to RDD< K,V> where :
+            RDD<(year,month,city), count>  to RDD< K,V> where :
                 K = year/month
-                V = list of cities
+                V = cities
 
         .groupByKey : group by year/month
-
         .sortByKey : order by year/month
          */
 
@@ -97,15 +77,15 @@ public class Query1 {
 
         JavaPairRDD<String, Iterable<String>> citiesWithClearSky = weatherFile
                 .filter( csvLine -> !csvLine.equals(firstLine) )
-                .flatMapToPair((PairFlatMapFunction<String, Tuple4<Integer, Integer, Integer, Integer>, Integer>) s -> {
+                .flatMapToPair((PairFlatMapFunction<String, Tuple4<Integer, Integer, Integer, String>, Integer>) s -> {
                     String[] strings = s.split(",", -1);
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = df.parse(strings[0]);
                     GregorianCalendar cal = new GregorianCalendar();
                     cal.setTime(date);
-                    List<Tuple2<Tuple4<Integer,Integer,Integer,Integer>,Integer>> list = new ArrayList<>();
+                    List<Tuple2<Tuple4<Integer,Integer,Integer,String>,Integer>> list = new ArrayList<>();
                     for (int i = 1; i < strings.length; i++) {
-                        list.add( new Tuple2<>(new Tuple4<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),i ), strings[i].equals("sky is clear") ? 1 : 0));
+                        list.add( new Tuple2<>(new Tuple4<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),citiesArray.get(i-1) ), strings[i].equals("sky is clear") ? 1 : 0));
                     }
                     return list.iterator();
 
@@ -115,7 +95,7 @@ public class Query1 {
                                 object._1._2() == 3 ||
                                 object._1._2() == 4 ) )
                 .reduceByKey(Integer::sum)
-                .mapToPair((PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, Integer>, Integer>, Tuple3<Integer, Integer, Integer>, Integer>) tuple -> {
+                .mapToPair((PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, String>, Integer>, Tuple3<Integer, Integer, String>, Integer>) tuple -> {
                     if (tuple._2 > 12){ //se almeno 12 ore in un giorno sono serene
                         return new Tuple2<>(new Tuple3<>(tuple._1._1(),tuple._1._2(),tuple._1._4()), 1);
                     }else {
@@ -123,21 +103,19 @@ public class Query1 {
                     }
                 })
                 .reduceByKey(Integer::sum)
-                .filter((Function<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>, Boolean>) tuple -> {
+                .filter((Function<Tuple2<Tuple3<Integer, Integer, String>, Integer>, Boolean>) tuple -> {
                     if (tuple._2 >= 15) {// città con più di 15 giorni al mese con tempo sereno
                         return true;
                     }
                     else return false;
                 })
-                .mapToPair((PairFunction<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>, Integer, String>) tuple -> {
+                .mapToPair((PairFunction<Tuple2<Tuple3<Integer, Integer, String>, Integer>, String, String>) tuple -> {
                     String yearStr = tuple._1._1().toString();
                     int temp = tuple._1._2() +1;
                     String monthStr = String.valueOf(temp);
                     String date = yearStr.concat("/").concat(monthStr);
-                    return new Tuple2<>(tuple._1._3(),date);
+                    return new Tuple2<>(date,tuple._1._3());
                 })
-                .join(citiesWithIndex)
-                .mapToPair((PairFunction<Tuple2<Integer, Tuple2<String, String>>, String, String>) integerTuple2Tuple2 -> new Tuple2<>(integerTuple2Tuple2._2._1, integerTuple2Tuple2._2._2))
                 .groupByKey()
                 .sortByKey();
 
