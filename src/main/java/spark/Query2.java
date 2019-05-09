@@ -8,10 +8,8 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
-import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 import scala.Tuple3;
-import scala.Tuple4;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,6 +30,11 @@ public class Query2 {
         citiesArray.remove(0);
 
 
+
+
+        //creazione file di citta-nazione in preprocessing attraverso le api
+        //caricare il file come hashmap,quindi abbiamo una variabile hashmap del tipo citta-nazione
+        //trovo la nazione data la citta
         JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > dataset = attributes_file
                 .filter( csvLine -> !csvLine.equals(firstLine) )
                 .flatMapToPair((PairFlatMapFunction<String, Tuple3<Integer, Integer, String>, Tuple2<Double,Double> >) s -> {
@@ -72,8 +75,8 @@ public class Query2 {
         JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > min_max = dataset.reduceByKey(new Function2<Tuple2<Double, Double>, Tuple2<Double, Double>, Tuple2<Double, Double>>() {
             @Override
             public Tuple2<Double, Double> call(Tuple2<Double, Double> v1, Tuple2<Double, Double> v2) throws Exception {
-                Double max = 0.0;
-                Double min = 0.0;
+                Double max;
+                Double min ;
                 if (v1._1() >= v2._1()) {
                     max = v1._1();
                 }else{
