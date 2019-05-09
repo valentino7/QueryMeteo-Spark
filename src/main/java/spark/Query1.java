@@ -1,5 +1,7 @@
 package spark;
 
+import Utils.Constants;
+import Utils.Context;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -17,21 +19,17 @@ import java.util.*;
 
 public class Query1 {
 
-    private static String inputPath2 = "data/weather_description.csv";
 
     public static void executeQuery(String[] args){
 
         // SparkContext creation
-        SparkConf conf = new SparkConf()
-                .setMaster("local")
-                .setAppName("Query1");
-        JavaSparkContext sc = new JavaSparkContext(conf);
+        JavaSparkContext sc=Context.getContext("Query1");
 
         /*
         Read csv file From hdfs (or local file system)
         creation of RDD<String> from csv file
         */
-        JavaRDD<String> weatherFile = sc.textFile(inputPath2);
+        JavaRDD<String> weatherFile = sc.textFile(Constants.INPUT_PATH_QUERY1);
         String firstLine = weatherFile.first();
         List<String> citiesArray = new ArrayList<>(Arrays.asList(firstLine.split(",")));
         citiesArray.remove(0);
