@@ -2,7 +2,6 @@ package spark;
 
 import Utils.Constants;
 import Utils.Context;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -23,13 +22,13 @@ public class Query1 {
     public static void executeQuery(String[] args){
 
         // SparkContext creation
-        JavaSparkContext sc=Context.getContext("Query1");
+        JavaSparkContext sc= Context.getContext("Query1");
 
         /*
         Read csv file From hdfs (or local file system)
         creation of RDD<String> from csv file
         */
-        JavaRDD<String> weatherFile = sc.textFile(Constants.INPUT_PATH_QUERY1);
+        JavaRDD<String> weatherFile = sc.textFile(Constants.WEATHER_FILE);
         String firstLine = weatherFile.first();
         List<String> citiesArray = new ArrayList<>(Arrays.asList(firstLine.split(",")));
         citiesArray.remove(0);
@@ -93,6 +92,9 @@ public class Query1 {
 
         .sortByKey : order by year/month
          */
+
+
+
         JavaPairRDD<String, Iterable<String>> citiesWithClearSky = weatherFile
                 .filter( csvLine -> !csvLine.equals(firstLine) )
                 .flatMapToPair((PairFlatMapFunction<String, Tuple4<Integer, Integer, Integer, Integer>, Integer>) s -> {
@@ -144,6 +146,7 @@ public class Query1 {
             System.out.println(x._1 + "  " + x._2);
         }
 
+        citiesWithClearSky.saveAsTextFile("output");
 
         sc.stop();
 

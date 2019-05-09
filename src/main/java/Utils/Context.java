@@ -11,8 +11,7 @@ public class Context {
         SparkConf conf = new SparkConf()
                 .setMaster(Constants.MASTER)
                 .setAppName(name);
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        return sc;
+        return new JavaSparkContext(conf);
     }
 
 }
