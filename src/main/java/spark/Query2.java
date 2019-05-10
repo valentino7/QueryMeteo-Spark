@@ -9,7 +9,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
-import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 import scala.Tuple3;
 
@@ -58,53 +57,62 @@ public class Query2 {
                     }
                     return list.iterator();
                 })
-                .filter((Function<Tuple2<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>>, Boolean>) v1 -> v1._2._1() != 0.0);
-        // Somme per stesso mese, Nazione e anno
-        // (Anno,Mese,Nazione) -> (Somma di temperature, count temperature )
+                .filter((Function<Tuple2<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>>, Boolean>) v1 -> v1._2._1() != 0.0)
+                .cache();
+
         JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > sum_count = dataset.reduceByKey((tuple1, tuple2) -> new Tuple2<>(tuple1._1()+tuple2._1(), tuple1._2()+ tuple2._2()));
 
         JavaPairRDD<Tuple3<Integer,Integer,String>, Double > average = sum_count
-                .mapValues((Function<Tuple2<Double, Double>, Double>) v1 -> v1._1()/v1._2());
+                .mapValues((Function<Tuple2<Double, Double>, Double>) v1 -> v1._1()/v1._2())
+                .cache();
 
 
         JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > min_max = dataset
                 .reduceByKey(new Function2<Tuple2<Double, Double>, Tuple2<Double, Double>, Tuple2<Double, Double>>() {
-                        @Override
-                        public Tuple2<Double, Double> call(Tuple2<Double, Double> v1, Tuple2<Double, Double> v2) throws Exception {
-                            Double max;
-                            Double min ;
-                            if (v1._1() > v2._1()) {
-                                max = v1._1();
-                            }else{
-                                max = v2._1();
-                            }
-                            if (v1._1() < v2._1()) {
-                                min = v1._1();
-                            } else{
-                                min  = v2._1();
-                            }
-
-                            return new Tuple2<>(max,min);
+                    @Override
+                    public Tuple2<Double, Double> call(Tuple2<Double, Double> v1, Tuple2<Double, Double> v2) throws Exception {
+                        Double max;
+                        Double min ;
+                        if (v1._1() > v2._1()) {
+                            max = v1._1();
+                        }else{
+                            max = v2._1();
                         }
-                    });
+                        if (v1._1() < v2._1()) {
+                            min = v1._1();
+                        } else{
+                            min  = v2._1();
+                        }
+                        return new Tuple2<>(max,min);
+                    }
+                });
 
-        JavaPairRDD<Tuple3<Integer,Integer,String>, Double > std_dev = dataset
+        JavaPairRDD<Tuple3<Integer,Integer,String>, Double> std_dev = dataset
                 .join(average)
-                .mapValues((Function<Tuple2<Tuple2<Double, Double>, Double>, Tuple2<Double, Double>>) v1 -> new Tuple2<>( v1._1()._1() - v1._2() , v1._1()._2()))
-                .reduceByKey((v1, v2) -> new Tuple2<>(Math.pow(v1._1(), 2),  v1._2()+v2._2()  ) )
+                .mapValues(new Function<Tuple2<Tuple2<Double, Double>, Double>, Tuple2<Double,Double>>() {
+                    @Override
+                    public Tuple2<Double,Double> call(Tuple2<Tuple2<Double, Double>, Double> v1) throws Exception {
+                        return new Tuple2<>( Math.pow(v1._1()._1() - v1._2(),2) , v1._1()._2());
+                    }
+                })
+                .reduceByKey(new Function2<Tuple2<Double, Double>, Tuple2<Double, Double>, Tuple2<Double, Double>>() {
+                    @Override
+                    public Tuple2<Double, Double> call(Tuple2<Double, Double> v1, Tuple2<Double, Double> v2) throws Exception {
+
+                        return new Tuple2<>( v1._1() +  v2._1(), v1._2() +v2._2());
+                    }
+                })
                 .mapValues(new Function<Tuple2<Double, Double>, Double>() {
                     @Override
                     public Double call(Tuple2<Double, Double> v1) throws Exception {
-                        double d = Math.sqrt(v1._1()/v1._2());
-                        System.out.println(v1._1() + "\t"+ v1._2() + "\t" + d );
-                        return d;
+                        return Math.sqrt(v1._1()/ (v1._2()-1));
                     }
                 });
 
 
-     /*   Map < Tuple3 < Integer, Integer, String >, Double > avergeMap = average.collectAsMap();
-        Map<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> >min_maxMap = min_max.collectAsMap();
-        Map<Tuple3<Integer,Integer,String>, Double > stdMap = std_dev.collectAsMap();
+     /*  Map < Tuple3 < Integer, Integer, String >, Double > avergeMap = average.collectAsMap();
+       Map<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> >min_maxMap = min_max.collectAsMap();
+
 
         for ( Tuple3<Integer,Integer,String> d : avergeMap.keySet()){
             System.out.println(d + " -> " + avergeMap.get(d) );
@@ -117,12 +125,15 @@ public class Query2 {
         }
 
         System.out.println("----------------------------------------------------------------------");
-
-        for ( Tuple3<Integer,Integer,String> d : stdMap.keySet()){
+*/
+        //Map<Tuple3<Integer,Integer,String>, Double > stdMap = std_dev.collectAsMap();
+     /*   for ( Tuple3<Integer,Integer,String> d : stdMap.keySet()){
             System.out.println(d + " -> " + stdMap.get(d) );
-        }*/
+        }
+*/
+        //  std_dev.saveAsTextFile("output");
 
-        //average.saveAsTextFile("output");
+        std_dev.saveAsTextFile("output1");
 
         sc.stop();
     }

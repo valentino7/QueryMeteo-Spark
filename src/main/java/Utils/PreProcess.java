@@ -31,7 +31,8 @@ public class PreProcess {
         String lat = arrays[1];
         String lon = arrays[2];
 
-        WebService.setUserName("anthony2801");
+        WebService.setUserName("tripps");
+        WebService.setConnectTimeOut(100000000);
         List<Toponym> result = new ArrayList<>();
 
         try {
