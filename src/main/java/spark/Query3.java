@@ -7,6 +7,8 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import scala.Tuple2;
 import scala.Tuple4;
 import scala.Tuple6;
@@ -50,21 +52,21 @@ public class Query3 {
                         if (d>=1000000)
                             d=d/10000;
 
-
                         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date date = df.parse(strings[0]);
-                        GregorianCalendar cal = new GregorianCalendar();
-                        cal.setTime(date);
 
-                        //df.setTimeZone(TimeZone.getTimeZone(city_nations.get(citiesArray.get(i-1))._2));
-                        //cal.setTimeZone(TimeZone.getTimeZone(city_nations.get(citiesArray.get(i-1))._2));
+                        DateTimeZone timeZone = DateTimeZone.forID( city_nations.get(citiesArray.get(i-1))._2);
+
+                        DateTime dateTime = new DateTime( date, timeZone );
+                        //DateTime dateTimeUtc = dateTime.withZone( DateTimeZone.UTC );
+
 
                         if ( citiesArray.get(i-1).equals("Portland")){
-                            System.out.println(cal.getTime()+ "|\t|" + strings[0]);
+                            System.out.println(dateTime.toString()+ "|\t|" + strings[0]);
                             System.out.println("------------------------------------");
                         }
 
-                        list.add( new Tuple2<>(new Tuple6<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), city_nations.get(citiesArray.get(i-1))._1(),citiesArray.get(i-1) ), d));
+                        list.add( new Tuple2<>(new Tuple6<>(dateTime.getYear(), dateTime.getMonthOfYear(),dateTime.getDayOfMonth(), dateTime.getHourOfDay(), city_nations.get(citiesArray.get(i-1))._1(),citiesArray.get(i-1) ), d));
                     }
                     return list.iterator();
                 });
