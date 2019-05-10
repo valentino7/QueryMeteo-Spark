@@ -9,16 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.apache.spark:spark-core_2.12:2.4.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.spark:spark-launcher_2.12:2.4.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.spark:spark-kvstore_2.12:2.4.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.spark:spark-network-common_2.12:2.4.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.spark:spark-network-shuffle_2.12:2.4.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.spark:spark-unsafe_2.12:2.4.2" level="project" />
-    <orderEntry type="library" name="Maven: org.xerial.snappy:snappy-java:1.1.7.3" level="project" />
-    <orderEntry type="library" name="Maven: org.roaringbitmap:RoaringBitmap:0.7.45" level="project" />
-    <orderEntry type="library" name="Maven: org.roaringbitmap:shims:0.7.45" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.spark:spark-tags_2.12:2.4.2" level="project" />
+    <orderEntry type="library" name="geonames-1.1.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-core_2.12:2.4.2" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.8" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avro:avro:1.8.2" level="project" />
@@ -170,5 +161,6 @@
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.9" level="project" />
     <orderEntry type="library" name="Maven: com.carrotsearch:hppc:0.7.2" level="project" />
     <orderEntry type="library" name="Maven: com.vlkan:flatbuffers:1.2.0-3f79e055" level="project" />
+    <orderEntry type="library" name="jdom-1.0" level="project" />
   </component>
 </module>
