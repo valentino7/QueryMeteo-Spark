@@ -23,16 +23,15 @@ public class Query2 {
         JavaSparkContext sc=Context.getContext("Query2");
 
 
-        //JavaRDD<String> city_attributes = sc.textFile(Constants.CITY_FILE);
-
-        JavaRDD<String> attributes_file = sc.textFile(Constants.TEMPERATURE_FILE);
+        JavaRDD<String> attributes_file = sc.textFile(Constants.HUMIDITY_FILE);
         String firstLine = attributes_file.first();
         List<String> citiesArray = new ArrayList<>(Arrays.asList(firstLine.split(",")));
         citiesArray.remove(0);
 
-        // hashmap <Città,Nazione>
-        Map<String,String> city_nations = PreProcess.executeProcess(sc);
+        // hashmap <Città,(Nazione,TimeZoneID)>
+        Map<String,Tuple2<String,String>> city_nations = PreProcess.executeProcess(sc);
 
+        System.exit(0);
 
         JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > dataset = attributes_file
                 .filter( csvLine -> !csvLine.equals(firstLine) )
@@ -49,11 +48,11 @@ public class Query2 {
                             d=0.0;
                         else
                             d= Double.parseDouble(strings[i]);
-                        if (d>= 350)
+                      /*  if (d>= 350)
                             d=d/1000;
                         if (d>=1000000)
-                            d=d/10000;
-                        list.add( new Tuple2<>(new Tuple3<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), city_nations.get(citiesArray.get(i-1)) ), new Tuple2<>( d ,1.0) ) );
+                            d=d/10000;*/
+                        list.add( new Tuple2<>(new Tuple3<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), city_nations.get(citiesArray.get(i-1))._1() ), new Tuple2<>( d ,1.0) ) );
                     }
                     return list.iterator();
                 })
@@ -125,15 +124,16 @@ public class Query2 {
         }
 
         System.out.println("----------------------------------------------------------------------");
-*/
+
         //Map<Tuple3<Integer,Integer,String>, Double > stdMap = std_dev.collectAsMap();
      /*   for ( Tuple3<Integer,Integer,String> d : stdMap.keySet()){
             System.out.println(d + " -> " + stdMap.get(d) );
         }
 */
         //  std_dev.saveAsTextFile("output");
-
-        std_dev.saveAsTextFile("output1");
+        min_max.saveAsTextFile("minMaxHumidity");
+        average.saveAsTextFile("averageHumidity");
+        std_dev.saveAsTextFile("stdHumidity");
 
         sc.stop();
     }

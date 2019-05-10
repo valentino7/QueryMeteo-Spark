@@ -96,7 +96,7 @@ public class Query1 {
                                 object._1._2() == 4 ) )
                 .reduceByKey(Integer::sum)
                 .mapToPair((PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, String>, Integer>, Tuple3<Integer, Integer, String>, Integer>) tuple -> {
-                    if (tuple._2 > 12){ //se almeno 12 ore in un giorno sono serene
+                    if (tuple._2 >= 18){ //se almeno 12 ore in un giorno sono serene
                         return new Tuple2<>(new Tuple3<>(tuple._1._1(),tuple._1._2(),tuple._1._4()), 1);
                     }else {
                         return new Tuple2<>(new Tuple3<>(tuple._1._1(),tuple._1._2(),tuple._1._4()), 0);
@@ -122,7 +122,7 @@ public class Query1 {
             System.out.println(x._1 + "  " + x._2);
         }
 
-        citiesWithClearSky.saveAsTextFile("output");
+        citiesWithClearSky.saveAsTextFile("clearSky");
 
         sc.stop();
 
