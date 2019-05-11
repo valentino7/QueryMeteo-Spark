@@ -33,6 +33,8 @@ public class Query2 {
 
         System.exit(0);
 
+        //(Anno,Mese,Nazione) -> ( value, count )
+
         JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > dataset = attributes_file
                 .filter( csvLine -> !csvLine.equals(firstLine) )
                 .flatMapToPair((PairFlatMapFunction<String, Tuple3<Integer, Integer, String>, Tuple2<Double,Double> >) s -> {
