@@ -100,7 +100,7 @@ public class SQLQuery1 {
                 "SELECT year, month, day, cities, SUM(count) AS sum " +
                         "FROM clearSky  " +
                         "GROUP BY year, month, day, cities");
-        //result.sort("year", "month", "day").show();
+        //clearSky.sort("year", "month", "day").show();
 
         clearSky.createOrReplaceTempView("tmp");
         //filter delle città con più di 18 ore di cielo sereno
@@ -113,19 +113,25 @@ public class SQLQuery1 {
         tmpResult.createOrReplaceTempView("tmp2");
         //città con almeno 15 giorni al mese di cielo sereno
         Dataset<Row> clearSkyDays = spark.sql(
-                 "SELECT year, month, cities, numdays " +
+                 "SELECT year, month , cities, numdays " +
                         "FROM (SELECT year, month, cities, COUNT(day) as numdays " +
                                 "FROM tmp2 " +
                                 "GROUP BY year, month, cities) " +
                         "WHERE numdays >= 15 " +
-                        "ORDER BY year, month");
-        clearSkyDays.show(50);
+                        "ORDER BY year");
+        //clearSkyDays.show(50);
 
         //TODO: non funziona
         clearSkyDays.createOrReplaceTempView("finaleView");
         Dataset<Row> result = spark.sql(
-                    "SELECT distinct(year, cities) " +
-                            "FROM finaleView ");
+                    "SELECT year, cities " +
+                           "FROM (SELECT year, COUNT(month) as countmonth, cities " +
+                                "FROM finaleView " +
+                                "GROUP BY year, cities " +
+                                "ORDER BY year) " +
+                           "WHERE countmonth == 3 " +
+                           "ORDER BY year");
+
 
         result.show(50);
 
