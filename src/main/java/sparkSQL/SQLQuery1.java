@@ -119,19 +119,16 @@ public class SQLQuery1 {
                                 "GROUP BY year, month, cities) " +
                         "WHERE numdays >= 15 " +
                         "ORDER BY year, month");
-        //clearSkyDays.show(50);
+        clearSkyDays.show(50);
 
         //TODO: non funziona
         clearSkyDays.createOrReplaceTempView("finaleView");
         Dataset<Row> result = spark.sql(
-                    "SELECT f1.year, f1.cities " +
-                            "FROM finaleView as f1 INNER JOIN finaleView as f2 " +
-                            "ON f1.month = f2.month " +
-                            "ORDER BY f1.year, f1.month");
+                    "SELECT distinct(year, cities) " +
+                            "FROM finaleView ");
 
         result.show(50);
 
-        //df.sort("year", "month", "day").show(100);
 
         spark.stop();
     }
