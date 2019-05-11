@@ -34,7 +34,10 @@ public class Main {
                 if (isSQL){
                     SQLQuery2.executeQuery(args);
                 }else {
+
                     Query2.executeQuery(args);
+
+
                 }
 
                 break;
