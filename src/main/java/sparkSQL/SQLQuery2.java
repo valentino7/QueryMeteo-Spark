@@ -1,6 +1,5 @@
 package sparkSQL;
 
-import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
 
 public class SQLQuery2 {

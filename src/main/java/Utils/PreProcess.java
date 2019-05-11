@@ -3,14 +3,14 @@ package Utils;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.geonames.*;
+import org.geonames.Timezone;
+import org.geonames.Toponym;
+import org.geonames.WebService;
 import scala.Tuple2;
-import scala.Tuple3;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 
 public class PreProcess {
