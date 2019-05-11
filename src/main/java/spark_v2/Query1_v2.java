@@ -1,13 +1,11 @@
-package spark;
+package spark_v2;
 
 import Utils.Constants;
 import Utils.Context;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.PairFlatMapFunction;
-import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.*;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
@@ -16,22 +14,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Query1 {
+
+public class Query1_v2 {
 
 
-    public static void executeQuery(String[] args){
-
-        // SparkContext creation
-        JavaSparkContext sc= Context.getContext("Query1");
-
-        /*
-        Read csv file From hdfs (or local file system)
-        creation of RDD<String> from csv file
-        */
-        JavaRDD<String> weatherFile = sc.textFile(Constants.WEATHER_FILE);
-        String firstLine = weatherFile.first();
-        List<String> citiesArray = new ArrayList<>(Arrays.asList(firstLine.split(",")));
-        citiesArray.remove(0);
+    public static void executeQuery(JavaRDD<Tuple3<String,String,Double>> values){
 
         /*
         .filter : Remove Header
@@ -73,30 +60,30 @@ public class Query1 {
         .sortByKey : order by year/month
          */
 
+        //  List<Tuple2<Tuple4<Integer,Integer,Integer,String>,Integer>> list = new ArrayList<>();
 
 
-        JavaPairRDD<Integer, Iterable<String>> citiesWithClearSky = weatherFile
-                .filter( csvLine -> !csvLine.equals(firstLine) )
-                .flatMapToPair((PairFlatMapFunction<String, Tuple4<Integer, Integer, Integer, String>, Integer>) s -> {
-                    String[] strings = s.split(",", -1);
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = df.parse(strings[0]);
-                    GregorianCalendar cal = new GregorianCalendar();
-                    cal.setTime(date);
-                    List<Tuple2<Tuple4<Integer,Integer,Integer,String>,Integer>> list = new ArrayList<>();
-                    for (int i = 1; i < strings.length; i++) {
-                        list.add( new Tuple2<>(new Tuple4<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),citiesArray.get(i-1) ), strings[i].equals("sky is clear") ? 1 : 0));
+
+
+        JavaPairRDD<Integer, Iterable<String>> citiesWithClearSky = values
+                .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple4<Integer,Integer,Integer,String>, Double>() {
+                    @Override
+                    public Tuple2<Tuple4<Integer, Integer, Integer, String>, Double> call(Tuple3<String, String, Double> tuple) throws Exception {
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date date = df.parse(tuple._1());
+                        GregorianCalendar cal = new GregorianCalendar();
+                        cal.setTime(date);
+
+                        return new Tuple2<>(new Tuple4<>(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH),tuple._2()),tuple._3());
                     }
-                    return list.iterator();
-
                 })
                 .filter( object -> (
                         object._1._2() == 2 ||
                                 object._1._2() == 3 ||
                                 object._1._2() == 4 ) )
-                .reduceByKey(Integer::sum)
-                .mapToPair((PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, String>, Integer>, Tuple3<Integer, Integer, String>, Integer>) tuple -> {
-                    if (tuple._2 >= 18){ //se almeno 12 ore in un giorno sono serene
+                .reduceByKey(Double::sum)
+                .mapToPair((PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, String>, Double>, Tuple3<Integer, Integer, String>, Integer>) tuple -> {
+                    if (tuple._2 >= 14.0){ //se almeno 12 ore in un giorno sono serene
                         return new Tuple2<>(new Tuple3<>(tuple._1._1(),tuple._1._2(),tuple._1._4()), 1);
                     }else {
                         return new Tuple2<>(new Tuple3<>(tuple._1._1(),tuple._1._2(),tuple._1._4()), 0);
@@ -116,16 +103,17 @@ public class Query1 {
                 .groupByKey()
                 .sortByKey();
 
+        Map<Integer, Iterable<String>> map = citiesWithClearSky.collectAsMap();
 
-        for(Tuple2<Integer, Iterable<String>> x :citiesWithClearSky.collect()) {
-            System.out.println(x._1 + "  " + x._2);
+        for( int x : map.keySet()) {
+            System.out.println(x + "  " + map.get(x));
         }
 
         citiesWithClearSky.saveAsTextFile("clearSky");
 
-        sc.stop();
 
     }
 
 
 }
+
