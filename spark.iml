@@ -10,6 +10,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="geonames-1.1.14" level="project" />
+    <orderEntry type="library" name="jdom-1.01" level="project" />
+    <orderEntry type="library" name="joda-time-2.10.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-core_2.12:2.4.2" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.8" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avro:avro:1.8.2" level="project" />
@@ -158,10 +160,8 @@
     <orderEntry type="library" name="Maven: org.apache.arrow:arrow-vector:0.10.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.arrow:arrow-format:0.10.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.arrow:arrow-memory:0.10.0" level="project" />
+    <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.9" level="project" />
     <orderEntry type="library" name="Maven: com.carrotsearch:hppc:0.7.2" level="project" />
     <orderEntry type="library" name="Maven: com.vlkan:flatbuffers:1.2.0-3f79e055" level="project" />
-    <orderEntry type="library" name="Maven: joda-time:joda-time:2.10" level="project" />
-    <orderEntry type="library" name="jdom-1.01" level="project" />
-    <orderEntry type="library" name="joda-time-2.10.2" level="project" />
   </component>
 </module>

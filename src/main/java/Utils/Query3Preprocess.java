@@ -9,12 +9,8 @@ import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple5;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 public class Query3Preprocess {
@@ -32,15 +28,21 @@ public class Query3Preprocess {
                     @Override
                     public Tuple2<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double, Double>> call(Tuple3<String, String, Double> tuple) throws Exception {
 
-                        // trasformare ora in ora locale tramite la timezone
+                        // read date time in custom format
                         String datePattern = "yyyy-MM-dd HH:mm:ss";
-                        LocalDateTime ldt = LocalDateTime.parse(tuple._1(),  DateTimeFormatter.ofPattern(datePattern) );
-
-                        ZoneId customZoneID = ZoneId.of(nations.get(tuple._2())._2);
-                        ZonedDateTime localDateTime = ldt.atZone(customZoneID);
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
+                        LocalDateTime date = LocalDateTime.parse(tuple._1(), formatter);
 
 
-                        return new Tuple2<>(new Tuple5<>(localDateTime.getYear(), localDateTime.getMonth().getValue(), localDateTime.getHour(),nations.get(tuple._2())._1() ,tuple._2() ), new Tuple2<>(  (tuple._3() > 400)  ? tuple._3()/1000 : tuple._3() ,1.0)  );
+                        // transform local date time in UTC format
+                        ZoneId utcZone = ZoneOffset.UTC;
+                        ZonedDateTime utcTime = ZonedDateTime.of(date,utcZone);
+
+                        // convert UTC datetime in ZoneID datetime
+                        ZonedDateTime dateTime = utcTime.withZoneSameInstant(ZoneId.of(nations.get(tuple._2())._2()));
+
+
+                        return new Tuple2<>(new Tuple5<>(dateTime.getYear(), dateTime.getMonth().getValue(), dateTime.getHour(),nations.get(tuple._2())._1() ,tuple._2() ), new Tuple2<>(  (tuple._3() > 400)  ? tuple._3()/1000 : tuple._3() ,1.0)  );
 
                     }
                 });

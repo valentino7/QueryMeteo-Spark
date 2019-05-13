@@ -4,7 +4,6 @@ import Utils.Constants;
 import Utils.Context;
 import Utils.PreProcess;
 import Utils.TupleComparator;
-import org.apache.hadoop.io.Text;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -20,8 +19,6 @@ import java.lang.Boolean;
 import java.lang.Double;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Query3 {

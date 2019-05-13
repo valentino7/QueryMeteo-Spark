@@ -1,20 +1,14 @@
 package spark_v2;
 
-import Utils.Constants;
-import Utils.Context;
-import Utils.PreProcess;
+
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.api.java.function.PairFlatMapFunction;
+
 import scala.Tuple2;
 import scala.Tuple3;
+import scala.Tuple4;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class Query2_v2 {
 
@@ -65,27 +59,13 @@ public class Query2_v2 {
 
          */
 
-        JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> > min_max = dataset
-                .reduceByKey(new Function2<Tuple2<Double, Double>, Tuple2<Double, Double>, Tuple2<Double, Double>>() {
-                    @Override
-                    public Tuple2<Double, Double> call(Tuple2<Double, Double> v1, Tuple2<Double, Double> v2) throws Exception {
-                        Double max;
-                        Double min ;
-                        if (v1._1() > v2._1()) {
-                            max = v1._1();
-                        }else{
-                            max = v2._1();
-                        }
-                        if (v1._1() < v2._1()) {
-                            min = v1._1();
-                        } else{
-                            min  = v2._1();
-                        }
-                        return new Tuple2<>(max,min);
-                    }
-                });
+        JavaPairRDD<Tuple3<Integer,Integer,String>, Double > max = dataset
+                .mapValues(Tuple2::_1)
+                .reduceByKey((Function2<Double, Double, Double>) Math::max);
 
-
+        JavaPairRDD<Tuple3<Integer,Integer,String>, Double > min = dataset
+                .mapValues(Tuple2::_1)
+                .reduceByKey((Function2<Double, Double, Double>) Math::min);
         /*
           from filter dataset cached before, we calculate std
 
@@ -146,9 +126,16 @@ public class Query2_v2 {
         }
 */
         //  std_dev.saveAsTextFile("output");
-        min_max.saveAsTextFile("minMax"+fileType);
+
+
+
+
+        JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple4<Iterable<Double>,Iterable<Double>,Iterable<Double>,Iterable<Double>>> aggregate = average.cogroup(max,min,std_dev);
+
+        /*min_max.saveAsTextFile("minMax"+fileType);
         average.saveAsTextFile("average"+fileType);
-        std_dev.saveAsTextFile("std"+fileType);
+        std_dev.saveAsTextFile("std"+fileType);*/
+        aggregate.saveAsTextFile("statistics"+fileType);
 
     }
 }

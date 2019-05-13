@@ -1,10 +1,8 @@
 package spark_v2;
 
-import Utils.Constants;
-import Utils.Context;
+
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.*;
 import scala.Tuple2;
 import scala.Tuple3;
@@ -18,7 +16,7 @@ import java.util.*;
 public class Query1_v2 {
 
 
-    public static void executeQuery(JavaRDD<Tuple3<String,String,Double>> values){
+    public static void executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
 
         /*
         .filter : Remove Header
@@ -66,21 +64,6 @@ public class Query1_v2 {
 
 
         JavaPairRDD<Integer, Iterable<String>> citiesWithClearSky = values
-                .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple4<Integer,Integer,Integer,String>, Double>() {
-                    @Override
-                    public Tuple2<Tuple4<Integer, Integer, Integer, String>, Double> call(Tuple3<String, String, Double> tuple) throws Exception {
-                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date date = df.parse(tuple._1());
-                        GregorianCalendar cal = new GregorianCalendar();
-                        cal.setTime(date);
-
-                        return new Tuple2<>(new Tuple4<>(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH),tuple._2()),tuple._3());
-                    }
-                })
-                .filter( object -> (
-                        object._1._2() == 2 ||
-                                object._1._2() == 3 ||
-                                object._1._2() == 4 ) )
                 .reduceByKey(Double::sum)
                 .mapToPair((PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, String>, Double>, Tuple3<Integer, Integer, String>, Integer>) tuple -> {
                     if (tuple._2 >= 14.0){ //se almeno 12 ore in un giorno sono serene
@@ -99,15 +82,15 @@ public class Query1_v2 {
                 })
                 .reduceByKey(Integer::sum)
                 .filter(v1 -> v1._2()>=3)
-                .mapToPair( tuple ->  tuple._1())
+                .mapToPair(Tuple2::_1)
                 .groupByKey()
                 .sortByKey();
 
-        Map<Integer, Iterable<String>> map = citiesWithClearSky.collectAsMap();
+       /* Map<Integer, Iterable<String>> map = citiesWithClearSky.collectAsMap();
 
         for( int x : map.keySet()) {
             System.out.println(x + "  " + map.get(x));
-        }
+        }*/
 
         citiesWithClearSky.saveAsTextFile("clearSky");
 

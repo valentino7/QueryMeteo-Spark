@@ -1,21 +1,21 @@
 package sparkSQL;
 
-import Utils.Constants;
-import org.apache.spark.SparkConf;
+
+import Utils.EvaluateTime;
+
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
+
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.types.DataType$;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple4;
-import scala.collection.immutable.Seq;
 
-import javax.xml.crypto.Data;
+
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -27,51 +27,10 @@ public class SQLQuery1 {
     private static String inputPath = "data/city_attributes.csv";
     private static String inputPath2 = "data/weather_description.csv";
 
-    public static void executeQuery(String[] args) {
-
-        SparkConf conf = new SparkConf()
-                .setMaster("local")
-                .setAppName("Query 1");
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        sc.setLogLevel("ERROR");
-
-        SparkSession spark = SparkSession
-                .builder()
-                .appName("Java Spark SQL query1").master("local")
-                //.config("spark.some.config.option", "some-value")
-                .getOrCreate();
-
+    public static void executeQuery(SparkSession spark,JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values) {
 
 
         //Dataset df = spark.read().format("csv").option("header", "true").load(inputPath2);
-
-        //preprocessing per rendere il dataset più facile da usare per sparksql
-        JavaRDD<String> weatherFile = sc.textFile(Constants.WEATHER_FILE);
-        String firstLine = weatherFile.first();
-        List<String> citiesArray = new ArrayList<>(Arrays.asList(firstLine.split(",")));
-        citiesArray.remove(0);
-
-        //TODO: codice ripetuto da risolvere
-        JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Integer> citiesWithClearSky = weatherFile
-                .filter(csvLine -> !csvLine.equals(firstLine))
-                .flatMapToPair((PairFlatMapFunction<String, Tuple4<Integer, Integer, Integer, String>, Integer>) s -> {
-                    String[] strings = s.split(",", -1);
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = df.parse(strings[0]);
-                    GregorianCalendar cal = new GregorianCalendar();
-                    cal.setTime(date);
-                    List<Tuple2<Tuple4<Integer, Integer, Integer, String>, Integer>> list = new ArrayList<>();
-                    for (int i = 1; i < strings.length; i++) {
-                        list.add(new Tuple2<>(new Tuple4<>(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), citiesArray.get(i - 1)), strings[i].equals("sky is clear") ? 1 : 0));
-                    }
-                    return list.iterator();
-
-                })
-                .filter(object -> (
-                        object._1._2() == 2 ||
-                                object._1._2() == 3 ||
-                                object._1._2() == 4));
-
 
         //creo lo schema
         List<StructField> fields = new ArrayList<>();
@@ -83,9 +42,12 @@ public class SQLQuery1 {
 
         StructType schema = DataTypes.createStructType(fields);
 
-        JavaRDD<Row> rows = citiesWithClearSky.map(new Function<Tuple2<Tuple4<Integer, Integer, Integer, String>, Integer>, Row>() {
+
+        long time = EvaluateTime.getTime();
+
+        JavaRDD<Row> rows = values.map(new Function<Tuple2<Tuple4<Integer, Integer, Integer, String>, Double>, Row>() {
             @Override
-            public Row call(Tuple2<Tuple4<Integer, Integer, Integer, String>, Integer> tuple) throws Exception {
+            public Row call(Tuple2<Tuple4<Integer, Integer, Integer, String>, Double> tuple) throws Exception {
                 return RowFactory.create(tuple._1._1(), tuple._1._2(), tuple._1._3(), tuple._1._4(), tuple._2);
             }
         });
@@ -121,7 +83,7 @@ public class SQLQuery1 {
                         "ORDER BY year");
         //clearSkyDays.show(50);
 
-        //TODO: non funziona
+
         clearSkyDays.createOrReplaceTempView("finaleView");
         Dataset<Row> result = spark.sql(
                     "SELECT year, cities " +
@@ -132,8 +94,12 @@ public class SQLQuery1 {
                            "WHERE countmonth == 3 " +
                            "ORDER BY year");
 
+        result.show();
 
-        result.show(50);
+        time = ( EvaluateTime.getTime() - time ) / (long)Math.pow(10,9);
+
+        System.out.println(time);
+
 
 
         spark.stop();
