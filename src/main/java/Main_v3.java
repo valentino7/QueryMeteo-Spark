@@ -58,18 +58,17 @@ public class Main_v3 {
             //START time
             Query2_v2.executeQuery( dt, i );
             //STOP time
-        }
-*/
-        //Query3
 
+        //Query3
+*/
         JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(sc,Constants.TEMPERATURE_FILE,3);
         JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(nations,valuesq3);
-        //START time
+/*        //START time
         Query3_v2.executeQuery(preprocess);
         //STOP time
 
         //SQL
-/*
+
 
 
         //Query_SQL1
@@ -83,12 +82,13 @@ public class Main_v3 {
         //START time
         SQLQuery2.executeQuery(args);
         //STOP time
+*/
 
         //Query_SQL3
 
         //START time
-        SQLQuery3.executeQuery(args);
+        SQLQuery3.executeQuery(spark,preprocess);
         //STOP time
-*/
+
     }
 }

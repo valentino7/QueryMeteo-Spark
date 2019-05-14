@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        if (args.length < 1 ){
+  /*      if (args.length < 1 ){
             System.err.println("Usage: Main <queryNumber(1,2,3)> <isSql(True,False)> <params>");
             System.exit(1);
         }
@@ -56,6 +56,6 @@ public class Main {
                 System.out.println("Exit");
                 System.exit(0);
         }
-
+*/
     }
 }

@@ -1,8 +1,6 @@
 package sparkSQL;
 
 
-import Utils.EvaluateTime;
-
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -19,9 +17,6 @@ import java.util.*;
 
 public class SQLQuery1 {
 
-    private static String inputPath = "data/city_attributes.csv";
-    private static String inputPath2 = "data/weather_description.csv";
-
     public static void executeQuery(SparkSession spark,JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values) {
 
 
@@ -33,12 +28,10 @@ public class SQLQuery1 {
         fields.add(DataTypes.createStructField("month", DataTypes.IntegerType, true));
         fields.add(DataTypes.createStructField("day", DataTypes.IntegerType, true));
         fields.add(DataTypes.createStructField("cities", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("count", DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField("weather", DataTypes.IntegerType, true));
 
         StructType schema = DataTypes.createStructType(fields);
 
-
-        long time = EvaluateTime.getTime();
 
         JavaRDD<Row> rows = values.map(new Function<Tuple2<Tuple4<Integer, Integer, Integer, String>, Double>, Row>() {
             @Override
@@ -54,7 +47,7 @@ public class SQLQuery1 {
         df.createOrReplaceTempView("clearSky");
         //conteggio del cielo sereno per ogni città, per ogni giorno, per ogni mese
         Dataset<Row> clearSky = spark.sql(
-                "SELECT year, month, day, cities, SUM(count) AS sum " +
+                "SELECT year, month, day, cities, SUM(weather) AS sum " +
                         "FROM clearSky  " +
                         "GROUP BY year, month, day, cities");
         //clearSky.sort("year", "month", "day").show();
@@ -90,11 +83,6 @@ public class SQLQuery1 {
                            "ORDER BY year");
 
         result.show();
-
-        time = ( EvaluateTime.getTime() - time ) / (long)Math.pow(10,9);
-
-        System.out.println(time);
-
 
 
         spark.stop();
