@@ -4,6 +4,7 @@ package spark_v2;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.*;
+import org.bson.Document;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
@@ -16,7 +17,7 @@ import java.util.*;
 public class Query1_v2 {
 
 
-    public static JavaPairRDD<Integer, Iterable<String>> executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
+    public static void executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
 
         /*
         .filter : Remove Header
@@ -92,9 +93,18 @@ public class Query1_v2 {
             System.out.println(x + "  " + map.get(x));
         }*/
 
-        //citiesWithClearSky.saveAsTextFile("clearSky");
+        JavaRDD<Document> toJson = citiesWithClearSky
+                .map(new Function<Tuple2<Integer, Iterable<String>>, Document>() {
+                    @Override
+                    public Document call(Tuple2<Integer, Iterable<String>> v1) throws Exception {
+                        Document doc = new Document();
+                        doc.put(v1._1().toString(),v1._2());
+                        return doc;
+                    }
+                });
 
-        return citiesWithClearSky;
+
+        toJson.saveAsTextFile("result1");
 
 
     }
