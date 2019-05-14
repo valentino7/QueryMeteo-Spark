@@ -2,7 +2,7 @@ package Utils;
 
 public class Constants {
 
-    public static final String MASTER ="local[*]";
+    public static final String MASTER ="local";
     public static final int STATISTICS_FILE = 3;
     public static final String[] FILE = {"data/temperature.csv","data/pressure.csv","data/humidity.csv"};
     public static final String CITY_FILE ="data/city_attributes.csv";

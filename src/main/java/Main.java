@@ -21,7 +21,7 @@ public class Main {
             case 1 :
 
                 if (isSQL){
-                    SQLQuery1.executeQuery(args);
+                    //SQLQuery1.executeQuery(args);
                 }else {
                     Query1.executeQuery(args);
                 }

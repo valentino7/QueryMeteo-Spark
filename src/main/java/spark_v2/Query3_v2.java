@@ -1,14 +1,18 @@
 package spark_v2;
 
 import Utils.TupleComparator;
+import com.google.common.collect.Iterables;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.VoidFunction;
 import scala.*;
 
 import java.lang.Boolean;
 import java.lang.Double;
+import java.util.*;
 
 
 public class Query3_v2 {
@@ -16,11 +20,11 @@ public class Query3_v2 {
     public static void executeQuery(JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values){
 
 
-        JavaPairRDD<Tuple2<Integer,String>, Iterable<Tuple2<String, Double >>> result = values
+        JavaPairRDD<Tuple2<Integer,String>, Iterable<String>> result = values
                 .filter(new Function<Tuple2<Tuple5<Integer,Integer,Integer, String, String>, Tuple2<Double,Double > >, Boolean>() {
                     @Override
                     public Boolean call(Tuple2<Tuple5<Integer,Integer,Integer, String, String>, Tuple2<Double,Double >> v1) throws Exception {
-                        if ( (v1._1()._3() >= 12  & v1._1()._3() <= 15) & (  (v1._1()._2() >= 6 & v1._1()._2() <= 9 ) || ( (v1._1()._2() >= 1 & v1._1()._2() <= 4) )  ) ){
+                        if ( (v1._1()._1()>= 2016)&(v1._1()._3() >= 12  & v1._1()._3() <= 15) & (  (v1._1()._2() >= 6 & v1._1()._2() <= 9 ) || ( (v1._1()._2() >= 1 & v1._1()._2() <= 4) )  ) ){
                             return true;
                         }
                         else return false;
@@ -58,12 +62,29 @@ public class Query3_v2 {
                         return Math.abs(v1-v2);
                     }
                 })
-                .mapToPair(tuple -> new Tuple2<>( new Tuple2<>(tuple._1()._3(),tuple._2()),new Tuple2<>(tuple._1()._1(),tuple._1()._2())))
-                .sortByKey(new TupleComparator())
-                .mapToPair(tuple -> new Tuple2<>(tuple._2(),tuple._1()))
-                .groupByKey();
+                .mapToPair(tuple -> new Tuple2<>(tuple._2(), tuple._1()))
+                .sortByKey(Comparator.reverseOrder())
+                .mapToPair(tuple -> new Tuple2<>(new Tuple2<>(tuple._2()._1(),tuple._2()._2()), tuple._2()._3()))
+                .groupByKey()
+                .cache();
 
 
+        JavaPairRDD<String, Iterable<String>> result2016 = result
+                .filter( t -> t._1()._1() == 2016)
+                .mapToPair( t -> new Tuple2<>(t._1()._2(),t._2()));
+
+
+        JavaPairRDD<String, Iterable<String> > result2017 = result
+                .filter( t -> t._1()._1() == 2017)
+                .mapToPair( t -> new Tuple2<>(t._1()._2(),t._2()))
+                .mapValues(new Function<Iterable<String>, Iterable<String>>() {
+                    @Override
+                    public Iterable<String> call(Iterable<String> v1) throws Exception {
+                        Iterable<String> limit = Iterables.limit(v1, 3);
+                        //System.out.println(limit);
+                        return limit;
+                    }
+                });
         // mappo i mesi in 2 quadrimestri
         // (Anno,Quadrimestre,Nazione,Città) -> (value,count)
         // reduceByKey (Anno,Quadrimestre,Nazione,Città) -> (sumValues,sumCount)
@@ -98,10 +119,12 @@ public class Query3_v2 {
 
 */
 
-        /*Map<Tuple2<Integer,String>, Iterable<Tuple2<String,Double>> > map = result.collectAsMap();
-        for (Tuple2<Integer,String> t : map.keySet()){
-            System.out.println(t +"\t" + map.get(t));
-        }*/
-        result.saveAsTextFile("Query3result");
+        List<Tuple2<String,Iterable<String>>> map = result2017.collect();
+
+        for ( Tuple2<String,Iterable<String>> s : map){
+            System.out.println(s );
+        }
+
+        // result.saveAsTextFile("Query3result");
     }
 }

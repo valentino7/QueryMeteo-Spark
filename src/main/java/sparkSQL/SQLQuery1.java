@@ -13,14 +13,9 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple4;
-
-
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.apache.spark.sql.functions.col;
+
 
 public class SQLQuery1 {
 

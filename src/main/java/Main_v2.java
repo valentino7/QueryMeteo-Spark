@@ -18,7 +18,7 @@ import spark_v2.Query3_v2;
 public class Main_v2 {
 
     public static void main(String[] args) {
-
+/*
         if (args.length < 1 ){
             System.err.println("Usage: Main <queryNumber(1,2,3)> <isSql(True,False)> <params>");
             System.exit(1);
@@ -113,7 +113,7 @@ public class Main_v2 {
             default:
                 System.out.println("Exit");
                 System.exit(0);
-        }
+        }*/
 
     }
 }

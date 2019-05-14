@@ -25,10 +25,8 @@ import java.util.Map;
 public class Query2Preprocess {
 
 
-    public static JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > executeProcess(JavaSparkContext sc,JavaRDD<Tuple3<String,String,Double>> values, int fileType) {
+    public static JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > executeProcess(Map<String, Tuple2<String,String>> nations,JavaRDD<Tuple3<String,String,Double>> values, int fileType) {
 
-
-        Map<String, Tuple2<String,String>> nations = Nations.retryNation(sc);
 
          return values
                 .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple3<Integer, Integer, String>, Tuple2<Double, Double>>() {

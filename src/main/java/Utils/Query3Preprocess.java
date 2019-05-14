@@ -18,10 +18,8 @@ public class Query3Preprocess {
     // input (date,city,values)
 
     // output (year,month,hour,nation,city )
-    public static JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> executeProcess(JavaSparkContext sc, JavaRDD<Tuple3<String,String,Double>> values) {
+    public static JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> executeProcess(Map<String, Tuple2<String,String>> nations,JavaRDD<Tuple3<String,String,Double>> values) {
 
-
-        Map<String, Tuple2<String,String>> nations = Nations.retryNation(sc);
 
         return values
                 .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double, Double>>() {
