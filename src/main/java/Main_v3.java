@@ -22,8 +22,15 @@ public class Main_v3 {
     public static void main(String[] args) {
 
 
+        SparkSession spark = SparkSession
+                .builder()
+                .appName("Spark")
+                .master("local")
+                .config("spark.mongodb.output.uri", "mongodb://172.18.0.2/queryDB.query1")
+                //.config("spark.some.config.option", "some-value")
+                .getOrCreate();
 
-        JavaSparkContext sc= Context.getContext("Java Spark");
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
 
         //Nations
         Map<String, Tuple2<String,String>> nations = Nations.retryNation(sc);
@@ -33,9 +40,13 @@ public class Main_v3 {
         JavaRDD<Tuple3<String,String,Double>>values = AllQueryPreProcess.executePreProcess(sc,Constants.WEATHER_FILE,1);
         JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(nations,values);
         //START time
-        Query1_v2.executeQuery(data);
+        JavaPairRDD<Integer, Iterable<String>> resultQuery1 = Query1_v2.executeQuery(data);
         //STOP time
 
+        //Store Query on Mondgo DB
+        WriteOnMongo.write(sc,resultQuery1);
+
+        System.exit(0);
 
         //Query2
 
@@ -60,11 +71,7 @@ public class Main_v3 {
 
         //SQL
 
-        SparkSession spark = SparkSession
-                .builder()
-                .appName("Java Spark SQL").master("local")
-                //.config("spark.some.config.option", "some-value")
-                .getOrCreate();
+
 
         //Query_SQL1
 

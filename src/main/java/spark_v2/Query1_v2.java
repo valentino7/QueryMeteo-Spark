@@ -16,7 +16,7 @@ import java.util.*;
 public class Query1_v2 {
 
 
-    public static void executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
+    public static JavaPairRDD<Integer, Iterable<String>> executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
 
         /*
         .filter : Remove Header
@@ -92,7 +92,9 @@ public class Query1_v2 {
             System.out.println(x + "  " + map.get(x));
         }*/
 
-        citiesWithClearSky.saveAsTextFile("clearSky");
+        //citiesWithClearSky.saveAsTextFile("clearSky");
+
+        return citiesWithClearSky;
 
 
     }
