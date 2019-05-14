@@ -12,7 +12,7 @@ import java.util.Map;
 public class Nations {
 
     // (città) -> (ISO,Timezone)
-    public static Map<String, Tuple2<String,String>> retryNation(JavaSparkContext sc) {
+    public static Map<String, Tuple2<String,String>> getNation(JavaSparkContext sc) {
 
 
         JavaRDD<String> city_attributes = sc.textFile(Constants.CITY_FILE);

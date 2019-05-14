@@ -34,7 +34,10 @@ public class Query1Preprocess {
                         ZoneId utcZone = ZoneOffset.UTC;
                         ZonedDateTime utcTime = ZonedDateTime.of(date,utcZone);
 
-                        return new Tuple2<>(new Tuple4<>(utcTime.getYear(),utcTime.getMonth().getValue(),utcTime.getDayOfMonth(),tuple._2()),tuple._3());
+                        // convert UTC datetime in ZoneID datetime
+                        ZonedDateTime dateTime = utcTime.withZoneSameInstant(ZoneId.of(nations.get(tuple._2())._2()));
+
+                        return new Tuple2<>(new Tuple4<>(dateTime.getYear(),dateTime.getMonth().getValue(),dateTime.getDayOfMonth(),tuple._2()),tuple._3());
                     }
                 })
                 .filter( object -> (

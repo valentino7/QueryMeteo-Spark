@@ -33,20 +33,19 @@ public class Main_v3 {
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
 
         //Nations
-        Map<String, Tuple2<String,String>> nations = Nations.retryNation(sc);
+        Map<String, Tuple2<String,String>> nations = Nations.getNation(sc);
 
-        //Query1
+   /*     //Query1
 
+        //Preprocess
         JavaRDD<Tuple3<String,String,Double>>values = AllQueryPreProcess.executePreProcess(sc,Constants.WEATHER_FILE,1);
         JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(nations,values);
+
         //START time
         JavaPairRDD<Integer, Iterable<String>> resultQuery1 = Query1_v2.executeQuery(data);
         //STOP time
 
-        //Store Query on Mondgo DB
-        WriteOnMongo.write(sc,resultQuery1);
 
-        System.exit(0);
 
         //Query2
 
@@ -60,7 +59,7 @@ public class Main_v3 {
             Query2_v2.executeQuery( dt, i );
             //STOP time
         }
-
+*/
         //Query3
 
         JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(sc,Constants.TEMPERATURE_FILE,3);
@@ -70,7 +69,7 @@ public class Main_v3 {
         //STOP time
 
         //SQL
-
+/*
 
 
         //Query_SQL1
@@ -90,6 +89,6 @@ public class Main_v3 {
         //START time
         SQLQuery3.executeQuery(args);
         //STOP time
-
+*/
     }
 }
