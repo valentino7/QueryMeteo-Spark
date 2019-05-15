@@ -1,10 +1,16 @@
 package spark_v2;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.*;
 import org.bson.Document;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json4s.jackson.Json;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
@@ -93,18 +99,21 @@ public class Query1_v2 {
             System.out.println(x + "  " + map.get(x));
         }*/
 
-        JavaRDD<Document> toJson = citiesWithClearSky
-                .map(new Function<Tuple2<Integer, Iterable<String>>, Document>() {
+        JavaRDD<JsonObject> toJson = citiesWithClearSky
+                .map(new Function<Tuple2<Integer, Iterable<String>>, JsonObject>() {
                     @Override
-                    public Document call(Tuple2<Integer, Iterable<String>> v1) throws Exception {
-                        Document doc = new Document();
-                        doc.put(v1._1().toString(),v1._2());
+                    public JsonObject call(Tuple2<Integer, Iterable<String>> v1) throws Exception {
+                        JsonObject doc = new JsonObject();
+                        String json = new Gson().toJson(v1._2() );
+                        doc.addProperty("year",v1._1().toString());
+                        doc.addProperty("cities", json);
                         return doc;
                     }
                 });
 
 
-        toJson.saveAsTextFile("result1");
+        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query1");
+        //toJson.saveAsTextFile("results/query1");
 
 
     }

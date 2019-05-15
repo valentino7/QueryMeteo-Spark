@@ -20,7 +20,7 @@ public class Query3_v2 {
     public static void executeQuery(JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values){
 
 
-        JavaPairRDD<Tuple2<Integer, String>, Iterable<String>> result = values
+        JavaPairRDD<Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>> temp = values
                 .filter(new Function<Tuple2<Tuple5<Integer,Integer,Integer, String, String>, Tuple2<Double,Double > >, Boolean>() {
                     @Override
                     public Boolean call(Tuple2<Tuple5<Integer,Integer,Integer, String, String>, Tuple2<Double,Double >> v1) throws Exception {
@@ -44,6 +44,13 @@ public class Query3_v2 {
                         return new Tuple2<>(v1._1() + v2._1(), v1._2() + v2._2());
                     }
                 })
+                .cache();
+
+
+
+
+
+        JavaPairRDD<Tuple2<Integer, String>, Iterable<String>> result = temp
                 .mapValues(new Function<Tuple2<Double, Double>, Double>() {
                     @Override
                     public Double call(Tuple2<Double, Double> v1) throws Exception {
@@ -57,11 +64,11 @@ public class Query3_v2 {
                     }
                 })
                 .reduceByKey(new Function2<Double, Double, Double>() {
-                    @Override
-                    public Double call(Double v1, Double v2) throws Exception {
-                        return Math.abs(v1-v2);
-                    }
-                })
+            @Override
+            public Double call(Double v1, Double v2) throws Exception {
+                return Math.abs(v1-v2);
+            }
+        })
                 .mapToPair(tuple -> new Tuple2<>(tuple._2(), tuple._1()))
                 .sortByKey(Comparator.reverseOrder())
                 .mapToPair(tuple -> new Tuple2<>(new Tuple2<>(tuple._2()._1(),tuple._2()._2()), tuple._2()._3()))
@@ -104,7 +111,7 @@ public class Query3_v2 {
                         List<Tuple2<String, Integer>> listToreturn = new ArrayList<>();
                         for (String s : v1._2()) {
                             List<String> temp = rank2016list.get(v1._1());
-                            listToreturn.add(new Tuple2<>(s, temp.indexOf(s) + 1));
+                            listToreturn.add(new Tuple2<>(s, temp.indexOf(s)+1));
                         }
                         return new Tuple2<>(v1._1(),listToreturn);
                     }
@@ -146,14 +153,19 @@ public class Query3_v2 {
                          città5 valore5
 
 */
+        Map<Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>> t = temp.collectAsMap();
 
-        Map<String,List<Tuple2<String,Integer>>> rank2017 = result2017.collectAsMap();
-
-
-        for ( String s : rank2017.keySet()){
-            System.out.println(s + "\t" + rank2017.get(s));
+        for ( Tuple4<Integer,Integer,String,String> l : t.keySet()){
+            System.out.println(l+"\t"+t.get(l));
         }
 
-        // result.saveAsTextFile("Query3result");
+        //Map<String,List<Tuple2<String,Integer>>> rank2017 = result2017.collectAsMap();
+
+
+       /* for ( String s : rank2017.keySet()){
+            System.out.println(s + "\t" + rank2017.get(s));
+        }*/
+
+        result2017.saveAsTextFile("results/query3");
     }
 }

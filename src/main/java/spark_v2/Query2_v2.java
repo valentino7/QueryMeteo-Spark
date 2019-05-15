@@ -1,13 +1,19 @@
 package spark_v2;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 
+import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
+import scala.Tuple5;
 
 
 public class Query2_v2 {
@@ -45,11 +51,11 @@ public class Query2_v2 {
 
          */
 
-        JavaPairRDD<Tuple3<Integer,Integer,String>, Double > average = dataset
+        // (anno,mese,nazione)
+        JavaPairRDD<Tuple3<Integer,Integer,String>,Double> average = dataset
                 .reduceByKey((tuple1, tuple2) -> new Tuple2<>(tuple1._1()+tuple2._1(), tuple1._2()+ tuple2._2()))
                 .mapValues((Function<Tuple2<Double, Double>, Double>) v1 -> v1._1()/v1._2())
                 .cache();
-
 
         /*
           from filter dataset cached before, we calculate min and max
@@ -130,12 +136,40 @@ public class Query2_v2 {
 
 
 
-        JavaPairRDD<Tuple3<Integer,Integer,String>, Tuple4<Iterable<Double>,Iterable<Double>,Iterable<Double>,Iterable<Double>>> aggregate = average.cogroup(max,min,std_dev);
+        JavaPairRDD<String, Iterable<Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>> aggregate = average
+                .cogroup(max,min,std_dev)
+                .mapToPair(new PairFunction<Tuple2<Tuple3<Integer, Integer, String>, Tuple4<Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>, String, Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>() {
+                    @Override
+                    public Tuple2<String, Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>> call(Tuple2<Tuple3<Integer, Integer, String>, Tuple4<Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>> tuple) throws Exception {
+                        String data = tuple._1()._1().toString() + tuple._1()._2().toString();
+                        return new Tuple2<>(tuple._1()._3(), new Tuple5<>(data, tuple._2._1(),tuple._2()._2(),tuple._2()._3(),tuple._2()._4()));
+                    }
+                })
+                .groupByKey();
 
-        /*min_max.saveAsTextFile("minMax"+fileType);
-        average.saveAsTextFile("average"+fileType);
-        std_dev.saveAsTextFile("std"+fileType);*/
-        aggregate.saveAsTextFile("statistics"+fileType);
+
+
+
+         /*JavaRDD<JsonObject> toJson = aggregate
+                .map(new Function<Tuple2<String, Iterable<Tuple5<Integer, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>>, JsonObject>() {
+                         @Override
+                         public JsonObject call(Tuple2<String, Iterable<Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>> v) throws Exception {
+                             JsonObject doc = new JsonObject();
+                             JsonArray statArrat = new JsonArray();
+                             while ( v._2().iterator().hasNext() ){
+                                 Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>> tupleTemp = v._2().iterator().next();
+                             }
+                             statArrat.
+                             String month = new Gson().toJson("");
+                             String monthProperties = new Gson().toJson(v1._2() );
+                             doc.addProperty("country",v1._1().toString());
+                             doc.addProperty("month", month);
+                             return doc;
+                             return null;
+                         }
+                     });*/
+
+        aggregate.saveAsTextFile("results/query2/" + fileType);
 
     }
 }

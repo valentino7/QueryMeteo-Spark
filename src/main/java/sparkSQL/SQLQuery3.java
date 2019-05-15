@@ -18,8 +18,7 @@ import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.rank;
+import static org.apache.spark.sql.functions.*;
 
 public class SQLQuery3 {
 
@@ -59,23 +58,23 @@ public class SQLQuery3 {
         Dataset<Row> filteredTable = spark.sql("" +
                 "SELECT * " +
                 "FROM filteredTab " +
-                "WHERE year >= 2016 AND (month >= 6 AND month <= 9) " +
-                "OR (month >= 1 AND month <= 4) AND (hour >= 12 AND hour <= 15)");
+                "WHERE year >= 2016 AND ( (month >= 6 AND month <= 9) " +
+                "OR (month >= 1 AND month <= 4) ) AND (hour >= 12 AND hour <= 15)");
 
         //filteredTable.show(50);
 
         filteredTable.createOrReplaceTempView("avgTemp1");
 
         //media calcolata a mano
-        /*Dataset<Row> avgTable1 = spark.sql("" +
-                "SELECT year, nation, city, (sum_temp/count_month) as avg_temp1 " +
+       /* Dataset<Row> sumTable1 = spark.sql("" +
+                "SELECT *" +
                 "FROM (SELECT year, nation, city, count(month) as count_month, SUM(temperature) as sum_temp " +
                         "FROM avgTemp1 " +
                         "WHERE month >= 1 AND month <= 4 " +
                         "GROUP BY year, nation, city) " +
-                "GROUP BY year, nation, city, avg_temp1");*/
+                "GROUP BY year, nation, city, sum_temp, count_month");
 
-        //avgTable1.show();
+        sumTable1.show();*/
 
         //calcolo della media delle temperature per il primo quadrimestre
         Dataset<Row> avgTable1 = spark.sql("" +
@@ -103,7 +102,7 @@ public class SQLQuery3 {
                 "WHERE month >= 6 AND month <= 9 " +
                 "GROUP BY year, nation, city");
 
-        //avgTable2.show();
+        avgTable2.show(50);
 
 
         avgTable1.createOrReplaceTempView("temp1");
@@ -123,8 +122,19 @@ public class SQLQuery3 {
                 "GROUP BY year, nation, city, sub_temp " +
                 "ORDER BY sub_temp DESC");
 
-        //joinTable.show(50);
 
+        joinTable.createOrReplaceTempView("filter");
+        Dataset<Row> p2016 = spark.sql( "SELECT * " +
+                "FROM filter " +
+                "WHERE year == 2016");
+
+
+        Dataset<Row> p2017 = spark.sql( "SELECT * " +
+                "FROM filter " +
+                "WHERE year == 2017");
+
+         p2016.show(100);
+         p2017.show(100);
         //TODO: organizzare due tabelle una per 2017 e una per 2016 con rank
     }
 }

@@ -28,7 +28,7 @@ public class SQLQuery1 {
         fields.add(DataTypes.createStructField("month", DataTypes.IntegerType, true));
         fields.add(DataTypes.createStructField("day", DataTypes.IntegerType, true));
         fields.add(DataTypes.createStructField("cities", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("weather", DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField("weather", DataTypes.DoubleType, true));
 
         StructType schema = DataTypes.createStructType(fields);
 
@@ -82,10 +82,9 @@ public class SQLQuery1 {
                            "WHERE countmonth == 3 " +
                            "ORDER BY year");
 
-        result.show();
+        //result.show();
+        result.write().csv("hdfs://172.18.0.5:54310/SQLquery1");
 
-
-        spark.stop();
     }
 
 }
