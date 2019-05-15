@@ -10,7 +10,5 @@ docker exec master /bin/bash -c \
 "chmod 700 /usr/local/hadoop/etc/hadoop/hadoop-env.sh;
     /usr/local/hadoop/etc/hadoop/hadoop-env.sh;
     hdfs namenode -format;
-    /usr/local/hadoop/sbin/start-dfs.sh"
-
-
-
+    /usr/local/hadoop/sbin/start-dfs.sh;
+    hdfs dfs -chmod -r 777 /"
