@@ -36,7 +36,7 @@ public class Main_v3 {
 
         //Nations
         Map<String, Tuple2<String,String>> nations = Nations.getNation(sc);
-
+/*
        //Query1
         JavaPairRDD<String,String>prova  = spark.read()
                 .parquet()
@@ -58,7 +58,7 @@ public class Main_v3 {
         //STOP time
 
 
-/*
+
         //Query2
 
         for (int i = 2 ; i < Constants.STATISTICS_FILE; i++) {
@@ -71,20 +71,20 @@ public class Main_v3 {
             Query2_v2.executeQuery(dt, i);
             //STOP time
         }
-/*
+*/
         //Query3
 
         JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(sc,Constants.TEMPERATURE_FILE,3);
         JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(nations,valuesq3);
       //START time
-        Query3_v2.executeQuery(preprocess);
+ /*       Query3_v2.executeQuery(preprocess);
         //STOP time
 
         //SQL
 
 
 
-        //Query_SQL1
+       //Query_SQL1
 
         //START time
         SQLQuery1.executeQuery(spark,data);
@@ -96,12 +96,12 @@ public class Main_v3 {
         SQLQuery2.executeQuery(args);
         //STOP time
 
-
+*/
         //Query_SQL3
 
         //START time
         SQLQuery3.executeQuery(spark,preprocess);
         //STOP time
-*/
+
     }
 }

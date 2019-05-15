@@ -14,8 +14,12 @@ import scala.Tuple2;
 import scala.Tuple4;
 import scala.Tuple5;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.rank;
 
 public class SQLQuery3 {
 
@@ -31,7 +35,7 @@ public class SQLQuery3 {
         fields.add(DataTypes.createStructField("nation", DataTypes.StringType, true));
         fields.add(DataTypes.createStructField("city", DataTypes.StringType, true));
         fields.add(DataTypes.createStructField("temperature", DataTypes.DoubleType, true));
-        fields.add(DataTypes.createStructField("count", DataTypes.DoubleType, true));
+        //fields.add(DataTypes.createStructField("count", DataTypes.DoubleType, true));
 
         StructType schema = DataTypes.createStructType(fields);
 
@@ -45,9 +49,82 @@ public class SQLQuery3 {
 
         Dataset<Row> df = spark.createDataFrame(rows, schema);
 
-        df.show(100);
-        df.createOrReplaceTempView("clearSky");
 
 
+        df.createOrReplaceTempView("filteredTab");
+        /*
+            anni 2016-2017 per i due quadrimestri giugno-settembre e gennaio-aprile
+            nella fascia oraria 12:00-15:00
+        */
+        Dataset<Row> filteredTable = spark.sql("" +
+                "SELECT * " +
+                "FROM filteredTab " +
+                "WHERE year >= 2016 AND (month >= 6 AND month <= 9) " +
+                "OR (month >= 1 AND month <= 4) AND (hour >= 12 AND hour <= 15)");
+
+        //filteredTable.show(50);
+
+        filteredTable.createOrReplaceTempView("avgTemp1");
+
+        //media calcolata a mano
+        /*Dataset<Row> avgTable1 = spark.sql("" +
+                "SELECT year, nation, city, (sum_temp/count_month) as avg_temp1 " +
+                "FROM (SELECT year, nation, city, count(month) as count_month, SUM(temperature) as sum_temp " +
+                        "FROM avgTemp1 " +
+                        "WHERE month >= 1 AND month <= 4 " +
+                        "GROUP BY year, nation, city) " +
+                "GROUP BY year, nation, city, avg_temp1");*/
+
+        //avgTable1.show();
+
+        //calcolo della media delle temperature per il primo quadrimestre
+        Dataset<Row> avgTable1 = spark.sql("" +
+                "SELECT year, nation, city, AVG(temperature) as avg_temp1 " +
+                "FROM avgTemp1 " +
+                "WHERE month >= 1 AND month <= 4 " +
+                "GROUP BY year, nation, city");
+
+
+        //media calcolata a mano
+        /*Dataset<Row> avgTable2 = spark.sql("" +
+                "SELECT year, nation, city, (sum_temp/count_month) as avg_temp2 " +
+                "FROM (SELECT year, nation, city, count(month) as count_month, SUM(temperature) as sum_temp " +
+                        "FROM avgTemp2 " +
+                        "WHERE month >= 6 AND month <= 9 " +
+                        "GROUP BY year, nation, city) " +
+                "GROUP BY year, nation, city, avg_temp2");*/
+
+        filteredTable.createOrReplaceTempView("avgTemp2");
+
+        //calcolo della media delle temperature per il secondo quadrimestre
+        Dataset<Row> avgTable2 =spark.sql("" +
+                "SELECT year, nation, city, AVG(temperature) as avg_temp2 " +
+                "FROM avgTemp2 " +
+                "WHERE month >= 6 AND month <= 9 " +
+                "GROUP BY year, nation, city");
+
+        //avgTable2.show();
+
+
+        avgTable1.createOrReplaceTempView("temp1");
+        avgTable2.createOrReplaceTempView("temp2");
+
+
+        /*
+            differenza delle temperature dalla massima alla minima
+            per ogni nazione-città
+         */
+        Dataset<Row> joinTable = spark.sql("" +
+                "SELECT year, nation, city, sub_temp " +
+                "FROM (SELECT t1.year, t1.nation, t1.city, ABS(t1.avg_temp1 - t2.avg_temp2) as sub_temp " +
+                        "FROM temp1 as t1 JOIN temp2 as t2 " +
+                        "ON t1.year = t2.year AND t1.city = t2.city " +
+                        "GROUP BY t1.year, t1.nation, t1.city, sub_temp) " +
+                "GROUP BY year, nation, city, sub_temp " +
+                "ORDER BY sub_temp DESC");
+
+        //joinTable.show(50);
+
+        //TODO: organizzare due tabelle una per 2017 e una per 2016 con rank
     }
 }
