@@ -10,8 +10,10 @@ docker run -t -i -p $PORT:$PORT -e NIFI_WEB_HTTP_PORT="$PORT" -e HDFS_DEFAULTS_F
 
 docker cp ./config/core-site.xml nifi:/opt/nifi/core-site.xml
 docker cp ./config/hdfs-site.xml nifi:/opt/nifi/hdfs-site.xml
+docker cp ./hbase/core-site.xml nifi:/opt/nifi/core-site.xml
+docker cp ./hbase/hbase-site.xml nifi:/opt/nifi/hbase-site.xml
 docker cp ./data nifi:/opt/nifi/
-docker cp ./test.xml nifi:/ciao.xml
+docker cp ./test.xml nifi:/templateFinal.xml
 docker cp ./nifi-deploy-config-1.1.32.jar nifi:/nifi-deploy-config-1.1.32.jar
 
 
@@ -23,6 +25,6 @@ until $(curl --output /dev/null --silent --head --fail http://$HOST:$PORT); do
     sleep 5
 done
 
-docker exec -it nifi java -jar /nifi-deploy-config-1.1.32.jar -nifi http://$HOST:9999/nifi-api -conf /ciao.xml -m deployTemplate
+docker exec -it nifi java -jar /nifi-deploy-config-1.1.32.jar -nifi http://$HOST:9999/nifi-api -conf /templateFinal.xml -m deployTemplate
 
 
