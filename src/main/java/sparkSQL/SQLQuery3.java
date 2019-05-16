@@ -65,16 +65,6 @@ public class SQLQuery3 {
 
         filteredTable.createOrReplaceTempView("avgTemp1");
 
-        //media calcolata a mano
-       /* Dataset<Row> sumTable1 = spark.sql("" +
-                "SELECT *" +
-                "FROM (SELECT year, nation, city, count(month) as count_month, SUM(temperature) as sum_temp " +
-                        "FROM avgTemp1 " +
-                        "WHERE month >= 1 AND month <= 4 " +
-                        "GROUP BY year, nation, city) " +
-                "GROUP BY year, nation, city, sum_temp, count_month");
-
-        sumTable1.show();*/
 
         //calcolo della media delle temperature per il primo quadrimestre
         Dataset<Row> avgTable1 = spark.sql("" +
@@ -84,14 +74,6 @@ public class SQLQuery3 {
                 "GROUP BY year, nation, city");
 
 
-        //media calcolata a mano
-        /*Dataset<Row> avgTable2 = spark.sql("" +
-                "SELECT year, nation, city, (sum_temp/count_month) as avg_temp2 " +
-                "FROM (SELECT year, nation, city, count(month) as count_month, SUM(temperature) as sum_temp " +
-                        "FROM avgTemp2 " +
-                        "WHERE month >= 6 AND month <= 9 " +
-                        "GROUP BY year, nation, city) " +
-                "GROUP BY year, nation, city, avg_temp2");*/
 
         filteredTable.createOrReplaceTempView("avgTemp2");
 
@@ -102,7 +84,7 @@ public class SQLQuery3 {
                 "WHERE month >= 6 AND month <= 9 " +
                 "GROUP BY year, nation, city");
 
-        avgTable2.show(50);
+        //avgTable2.show(50);
 
 
         avgTable1.createOrReplaceTempView("temp1");
@@ -124,17 +106,44 @@ public class SQLQuery3 {
 
 
         joinTable.createOrReplaceTempView("filter");
-        Dataset<Row> p2016 = spark.sql( "SELECT * " +
+
+        //classifica delle città per nazione nel 2016
+        Dataset<Row> rank2016 = spark.sql(
+                "SELECT year, nation, city, sub_temp, " +
+                "DENSE_RANK() OVER (PARTITION BY nation ORDER BY sub_temp DESC) as rank " +
                 "FROM filter " +
-                "WHERE year == 2016");
+                "WHERE (year == 2016) " +
+                "GROUP BY year, nation, city, sub_temp");
 
 
-        Dataset<Row> p2017 = spark.sql( "SELECT * " +
-                "FROM filter " +
-                "WHERE year == 2017");
+        //top 3 città per ogni nazione nel 2017
+        Dataset<Row> topThree2017 = spark.sql(
+        "SELECT year, nation, city, sub_temp, rank " +
+               "FROM (SELECT *, " +
+                        "DENSE_RANK() OVER (PARTITION BY nation ORDER BY sub_temp DESC) as rank " +
+                        "FROM filter " +
+                        "WHERE year == 2017) " +
+               "WHERE rank BETWEEN 1 AND 3 " +
+               "GROUP BY year, nation, city, sub_temp, rank");
 
-         p2016.show(100);
-         p2017.show(100);
-        //TODO: organizzare due tabelle una per 2017 e una per 2016 con rank
+
+        //rank2016.show(50);
+        //topThree2017.show();
+
+
+        rank2016.createOrReplaceTempView("rank2016");
+        topThree2017.createOrReplaceTempView("rank2017");
+
+
+        //confronto tra rank delle città nel 2017 e nel 2016
+        Dataset<Row> compareRanks = spark.sql(
+                "SELECT r1.nation, r1.city, r2.year, r2.rank, r1.year, r1.rank " +
+                        "FROM rank2016 as r1 JOIN rank2017 as r2 " +
+                        "ON r1.nation == r2.nation AND r1.city == r2.city " +
+                        "GROUP BY r1.year, r2.year, r1.nation, r2.nation, r1.city, r2.city, r1.rank, r2.rank, r1.sub_temp, r2.sub_temp " +
+                        "ORDER BY r1.nation, r2.rank");
+
+        compareRanks.show();
+
     }
 }
