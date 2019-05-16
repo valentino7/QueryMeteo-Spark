@@ -54,32 +54,12 @@ public class SQLQuery2 {
         // Register the DataFrame as a SQL temporary view
         df.createOrReplaceTempView("statistics");
         //conteggio del cielo sereno per ogni città, per ogni giorno, per ogni mese
-        Dataset<Row> mean = spark.sql(
-                "SELECT country, month, year, MEAN(value) AS mean " +
+        Dataset<Row> stat = spark.sql(
+                "SELECT country, month, year, MEAN(value) AS mean ,MIN(value) as min, MAX(value) as max, STDDEV_SAMP(value) as stddev " +
                         "FROM statistics  " +
                         "GROUP BY country,year,month");
 
-        Dataset<Row> min = spark.sql(
-                "SELECT country, month, year, MIN(value) AS min " +
-                        "FROM statistics  " +
-                        "GROUP BY country,year,month");
-
-        Dataset<Row> max = spark.sql(
-                "SELECT country, month, year, MAX(value) AS max " +
-                        "FROM statistics  " +
-                        "GROUP BY country,year,month");
-        Dataset<Row> dev = spark.sql(
-                "SELECT country, month, year, STDDEV_SAMP(value) AS stddev " +
-                        "FROM statistics  " +
-                        "GROUP BY country,year,month");
-
-
-
-
-        min.show();
-        max.show();
-        mean.show();
-        dev.show();
+        stat.show();
         //clearSky.sort("year", "month", "day").show();
 
     }
