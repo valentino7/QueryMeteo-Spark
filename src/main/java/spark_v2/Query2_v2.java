@@ -2,18 +2,16 @@ package spark_v2;
 
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 
-import org.apache.spark.api.java.function.PairFunction;
-import scala.Tuple2;
-import scala.Tuple3;
-import scala.Tuple4;
-import scala.Tuple5;
+import scala.*;
+
+import java.lang.Boolean;
+import java.lang.Double;
+
 
 
 public class Query2_v2 {
@@ -67,11 +65,23 @@ public class Query2_v2 {
 
         JavaPairRDD<Tuple3<Integer,Integer,String>, Double > max = dataset
                 .mapValues(Tuple2::_1)
-                .reduceByKey((Function2<Double, Double, Double>) Math::max);
+                .reduceByKey((Function2<Double, Double, Double>) Math::max)
+                .cache();
+
 
         JavaPairRDD<Tuple3<Integer,Integer,String>, Double > min = dataset
                 .mapValues(Tuple2::_1)
-                .reduceByKey((Function2<Double, Double, Double>) Math::min);
+                .reduceByKey((Function2<Double, Double, Double>) Math::min)
+                .cache();
+
+
+        JavaPairRDD<String, Iterable<Tuple2<Integer, Iterable<Tuple3<Integer, Double, Double>>>>> kkk = min
+                .join(max)
+                .mapToPair(t -> new Tuple2<>(new Tuple2<>(t._1._1(),t._1._3()),new Tuple3<>(t._1._2(),t._2._1(),t._2._2())))
+                .groupByKey()
+                .mapToPair(t-> new Tuple2<>(t._1._2(),new Tuple2<>(t._1._1(),t._2())))
+                .groupByKey();
+
         /*
           from filter dataset cached before, we calculate std
 
@@ -110,6 +120,29 @@ public class Query2_v2 {
                 });
 
 
+        JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> result_min_max = min.join(max);
+        JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> result_avg_stddev = average.join(std_dev);
+
+        JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple4<Double, Double ,Double, Double>> result = result_avg_stddev
+                .join(result_min_max)
+                .mapValues(value -> new Tuple4<>(value._1._1(),value._1._2,value._2._1(), value._2._2()));
+
+        JavaPairRDD<String, Iterable<Tuple2<Integer, Iterable<Tuple2<Integer, Tuple4<Double, Double, Double, Double>>>>>> record = result
+                .mapToPair( t -> new Tuple2<>( new Tuple2<>(t._1._1(),t._1._3()), new Tuple2<>(t._1._2(),t._2()) ) )
+                .groupByKey()
+               /* .mapValues( value -> {
+                    HashMap<Integer,Statistics> map = new HashMap();
+                    value.forEach(tuple -> {
+                        Statistics stat = new Statistics(tuple._2._1(), tuple._2._2(), tuple._2._3(), tuple._2._4());
+                        map.put(tuple._1(),stat);
+                    });
+                    return map;
+                })*/
+                .mapToPair(t -> new Tuple2<>(t._1._2(), new Tuple2<>(t._1._1(),t._2)))
+                .groupByKey();
+
+        //System.out.println("scrittura su file system");
+
      /*  Map < Tuple3 < Integer, Integer, String >, Double > avergeMap = average.collectAsMap();
        Map<Tuple3<Integer,Integer,String>, Tuple2<Double, Double> >min_maxMap = min_max.collectAsMap();
 
@@ -131,45 +164,15 @@ public class Query2_v2 {
             System.out.println(d + " -> " + stdMap.get(d) );
         }
 */
-        //  std_dev.saveAsTextFile("output");
+
+        JavaRDD<String> toJson = record
+                .map( tuple -> new Gson().toJson(tuple));
 
 
+        //String json = new Gson.tojson(classe);
 
 
-        JavaPairRDD<String, Iterable<Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>> aggregate = average
-                .cogroup(max,min,std_dev)
-                .mapToPair(new PairFunction<Tuple2<Tuple3<Integer, Integer, String>, Tuple4<Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>, String, Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>() {
-                    @Override
-                    public Tuple2<String, Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>> call(Tuple2<Tuple3<Integer, Integer, String>, Tuple4<Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>> tuple) throws Exception {
-                        String data = tuple._1()._1().toString() + tuple._1()._2().toString();
-                        return new Tuple2<>(tuple._1()._3(), new Tuple5<>(data, tuple._2._1(),tuple._2()._2(),tuple._2()._3(),tuple._2()._4()));
-                    }
-                })
-                .groupByKey();
-
-
-
-
-         /*JavaRDD<JsonObject> toJson = aggregate
-                .map(new Function<Tuple2<String, Iterable<Tuple5<Integer, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>>, JsonObject>() {
-                         @Override
-                         public JsonObject call(Tuple2<String, Iterable<Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>>>> v) throws Exception {
-                             JsonObject doc = new JsonObject();
-                             JsonArray statArrat = new JsonArray();
-                             while ( v._2().iterator().hasNext() ){
-                                 Tuple5<String, Iterable<Double>, Iterable<Double>, Iterable<Double>, Iterable<Double>> tupleTemp = v._2().iterator().next();
-                             }
-                             statArrat.
-                             String month = new Gson().toJson("");
-                             String monthProperties = new Gson().toJson(v1._2() );
-                             doc.addProperty("country",v1._1().toString());
-                             doc.addProperty("month", month);
-                             return doc;
-                             return null;
-                         }
-                     });*/
-
-        aggregate.saveAsTextFile("results/query2/" + fileType);
+        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query2/" + fileType);
 
     }
 }

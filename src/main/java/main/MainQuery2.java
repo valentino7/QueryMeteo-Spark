@@ -27,23 +27,17 @@ public class MainQuery2 {
         //Nations
         Map<String, Tuple2<String,String>> nations = Nations.getNation(sc);
 
-        /*for (int i = 0; i < Constants.STATISTICS_FILE; i++) {
+        for (int i = 0; i < Constants.STATISTICS_FILE; i++) {
 
             JavaRDD<Tuple3<String, String, Double>> valuesq2 = AllQueryPreProcess.executePreProcess(sc, Constants.FILE[i], 2);
 
             // (Year,Month,Nation) , (Value, count)
             JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> dt = Query2Preprocess.executeProcess(nations, valuesq2, i);
 
-            //Query2_v2.executeQuery(dt, i);
+            Query2_v2.executeQuery(dt, i);
 
-
-
-        }*/
-        JavaRDD<Tuple3<String, String, Double>> valuesq2 = AllQueryPreProcess.executePreProcess(sc, Constants.FILE[2], 2);
-        JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> dt = Query2Preprocess.executeProcess(nations, valuesq2, 2);
-
-        SQLQuery2.executeQuery(spark,dt);
-        //SQLQuery2.executeQuery(args);
+            SQLQuery2.executeQuery(spark,dt);
+        }
 
         spark.stop();
 

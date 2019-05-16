@@ -2,6 +2,7 @@ package spark_v2;
 
 import Utils.TupleComparator;
 import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -153,11 +154,11 @@ public class Query3_v2 {
                          città5 valore5
 
 */
-        Map<Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>> t = temp.collectAsMap();
+        /*Map<Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>> t = temp.collectAsMap();
 
         for ( Tuple4<Integer,Integer,String,String> l : t.keySet()){
             System.out.println(l+"\t"+t.get(l));
-        }
+        }*/
 
         //Map<String,List<Tuple2<String,Integer>>> rank2017 = result2017.collectAsMap();
 
@@ -166,6 +167,9 @@ public class Query3_v2 {
             System.out.println(s + "\t" + rank2017.get(s));
         }*/
 
-        result2017.saveAsTextFile("results/query3");
+       JavaRDD<String> toJson = result2017
+               .map(tuple -> new Gson().toJson(tuple));
+
+        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query3");
     }
 }

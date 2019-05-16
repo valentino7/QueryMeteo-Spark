@@ -82,6 +82,5 @@ public class SQLQuery2 {
         dev.show();
         //clearSky.sort("year", "month", "day").show();
 
-        spark.stop();
     }
 }

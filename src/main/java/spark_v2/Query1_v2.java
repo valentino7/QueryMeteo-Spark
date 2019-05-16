@@ -99,17 +99,8 @@ public class Query1_v2 {
             System.out.println(x + "  " + map.get(x));
         }*/
 
-        JavaRDD<JsonObject> toJson = citiesWithClearSky
-                .map(new Function<Tuple2<Integer, Iterable<String>>, JsonObject>() {
-                    @Override
-                    public JsonObject call(Tuple2<Integer, Iterable<String>> v1) throws Exception {
-                        JsonObject doc = new JsonObject();
-                        String json = new Gson().toJson(v1._2() );
-                        doc.addProperty("year",v1._1().toString());
-                        doc.addProperty("cities", json);
-                        return doc;
-                    }
-                });
+        JavaRDD<String> toJson = citiesWithClearSky
+                .map(tuple -> new Gson().toJson(tuple));
 
 
         toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query1");
