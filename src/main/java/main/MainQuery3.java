@@ -4,6 +4,8 @@ import Utils.*;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import scala.Tuple2;
 import scala.Tuple3;
@@ -26,18 +28,23 @@ public class MainQuery3 {
 
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
 
-        //Nations
-        Map<String, Tuple2<String,String>> nations = Nations.getNation(sc);
+        sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
 
-        JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(sc, Constants.TEMPERATURE_FILE,3);
+        Dataset<Row> inputData = spark.read().parquet(Constants.HDFS +Constants.TEMPERATURE_FILE);
+
+        //Nations
+        Map<String, Tuple2<String,String>> nations = Nations.getNation(spark);
+
+        JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(inputData,3);
 
         JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(nations,valuesq3);
 
-        /*  Query3_v2.executeQuery(preprocess);
+        //getTIme
+        Query3_v2.executeQuery(preprocess);
+        //getTIme
 
 
-*/
-        SQLQuery3.executeQuery(spark,preprocess);
+        //SQLQuery3.executeQuery(spark,preprocess);
 
 
         spark.stop();

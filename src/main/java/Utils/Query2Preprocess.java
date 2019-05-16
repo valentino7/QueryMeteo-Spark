@@ -32,10 +32,6 @@ public class Query2Preprocess {
                 .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple3<Integer, Integer, String>, Tuple2<Double, Double>>() {
                     @Override
                     public Tuple2<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> call(Tuple3<String, String, Double> tuple) throws Exception {
-                        /*DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date date = df.parse(tuple._1());
-                        GregorianCalendar cal = new GregorianCalendar();
-                        cal.setTime(date);*/
 
                         // read date time in custom format
                         String datePattern = "yyyy-MM-dd HH:mm:ss";

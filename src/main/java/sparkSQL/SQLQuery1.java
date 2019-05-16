@@ -1,6 +1,7 @@
 package sparkSQL;
 
 
+import Utils.Constants;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -9,6 +10,7 @@ import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import scala.Function1;
 import scala.Tuple2;
 import scala.Tuple4;
 import java.util.*;
@@ -19,9 +21,6 @@ public class SQLQuery1 {
 
     public static void executeQuery(SparkSession spark,JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values) {
 
-
-        //Dataset df = spark.read().format("csv").option("header", "true").load(inputPath2);
-
         //creo lo schema
         List<StructField> fields = new ArrayList<>();
         fields.add(DataTypes.createStructField("year", DataTypes.IntegerType, true));
@@ -31,6 +30,8 @@ public class SQLQuery1 {
         fields.add(DataTypes.createStructField("weather", DataTypes.DoubleType, true));
 
         StructType schema = DataTypes.createStructType(fields);
+
+
 
 
         JavaRDD<Row> rows = values.map(new Function<Tuple2<Tuple4<Integer, Integer, Integer, String>, Double>, Row>() {

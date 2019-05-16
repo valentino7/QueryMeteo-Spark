@@ -1,2 +1,2 @@
 #!/bin/bash
-docker run --rm -t -i -p 27017:27017 --network=net --name mongo_server mongo /usr/bin/mongod --smallfiles --bind_ip_all
+docker run -it --name mongo-server --network net -p 27017:27017 mongo:xenial /usr/bin/mongod --smallfiles --bind_ip_all

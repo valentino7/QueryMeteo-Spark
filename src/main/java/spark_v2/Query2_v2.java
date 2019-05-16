@@ -166,13 +166,16 @@ public class Query2_v2 {
 */
 
         JavaRDD<String> toJson = record
-                .map( tuple -> new Gson().toJson(tuple));
+                .map( tuple -> {
+                    Tuple2<Integer, Tuple2<String, Iterable<Tuple2<Integer, Iterable<Tuple2<Integer, Tuple4<Double, Double, Double, Double>>>>>>> tp = new Tuple2<>(fileType,tuple);
+                    return new Gson().toJson(tp);
+                });
 
 
         //String json = new Gson.tojson(classe);
 
 
-        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query2/" + fileType);
+        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query2/file"+fileType);
 
     }
 }

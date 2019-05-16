@@ -35,15 +35,16 @@ public class Query1Preprocess {
                         ZonedDateTime utcTime = ZonedDateTime.of(date,utcZone);
 
                         // convert UTC datetime in ZoneID datetime
+
                         ZonedDateTime dateTime = utcTime.withZoneSameInstant(ZoneId.of(nations.get(tuple._2())._2()));
 
                         return new Tuple2<>(new Tuple4<>(dateTime.getYear(),dateTime.getMonth().getValue(),dateTime.getDayOfMonth(),tuple._2()),tuple._3());
                     }
                 })
                 .filter( object -> (
-                        object._1._2() == 2 ||
-                                object._1._2() == 3 ||
-                                object._1._2() == 4 ) );
+                        object._1()._2() == 2 ||
+                                object._1()._2() == 3 ||
+                                object._1()._2() == 4 ) );
     }
 
 }

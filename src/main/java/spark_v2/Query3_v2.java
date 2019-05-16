@@ -1,6 +1,5 @@
 package spark_v2;
 
-import Utils.TupleComparator;
 import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -8,7 +7,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.api.java.function.VoidFunction;
 import scala.*;
 
 import java.lang.Boolean;
@@ -20,6 +18,7 @@ public class Query3_v2 {
 
     public static void executeQuery(JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values){
 
+        //GetTime
 
         JavaPairRDD<Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>> temp = values
                 .filter(new Function<Tuple2<Tuple5<Integer,Integer,Integer, String, String>, Tuple2<Double,Double > >, Boolean>() {
@@ -118,58 +117,13 @@ public class Query3_v2 {
                     }
                 });
 
-        //
 
-
-        // mappo i mesi in 2 quadrimestri
-        // (Anno,Quadrimestre,Nazione,Città) -> (value,count)
-        // reduceByKey (Anno,Quadrimestre,Nazione,Città) -> (sumValues,sumCount)
-        // mapValues (Anno,Quadrimestre,Nazione,Città) -> ( average = sumValues/sumCount )
-        // map ( Anno,Nazione,Città) -> avg
-        // reduceByKey (Anno,Nazione,Città) -> |avg1-avg2|
-
-
-        /*Anno1 Nazione1 città1 valore1
-                         città2 valore2
-                         città3 valore3
-                         città4 valore4
-                         città5 valore5
-
-                Nazione2 città1 valore1
-                         città2 valore2
-                         città3 valore3
-                         città4 valore4
-                         città5 valore5
-
-          Anno2 Nazione1 città1 valore1
-                         città2 valore2
-                         città3 valore3
-                         città4 valore4
-                         città5 valore5
-
-                Nazione2 città1 valore1
-                         città2 valore2
-                         città3 valore3
-                         città4 valore4
-                         città5 valore5
-
-*/
-        /*Map<Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>> t = temp.collectAsMap();
-
-        for ( Tuple4<Integer,Integer,String,String> l : t.keySet()){
-            System.out.println(l+"\t"+t.get(l));
-        }*/
-
-        //Map<String,List<Tuple2<String,Integer>>> rank2017 = result2017.collectAsMap();
-
-
-       /* for ( String s : rank2017.keySet()){
-            System.out.println(s + "\t" + rank2017.get(s));
-        }*/
-
+       //GetTime
        JavaRDD<String> toJson = result2017
                .map(tuple -> new Gson().toJson(tuple));
 
         toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query3");
+
+        //GetTime
     }
 }

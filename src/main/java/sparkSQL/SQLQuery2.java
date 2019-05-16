@@ -59,7 +59,7 @@ public class SQLQuery2 {
                         "FROM statistics  " +
                         "GROUP BY country,year,month");
 
-        stat.show();
+        stat.show(5);
         //clearSky.sort("year", "month", "day").show();
 
     }
