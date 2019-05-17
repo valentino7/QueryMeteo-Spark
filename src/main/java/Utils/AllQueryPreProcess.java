@@ -28,10 +28,11 @@ public class AllQueryPreProcess {
                     public Iterator<Tuple3<String, String, Double>> call(Row s) throws Exception {
                         List<Tuple3<String, String, Double>> list = new ArrayList<>();
                         for (int i = 1; i < s.size(); i++) {
+                            String city = citiesArray.get(i - 1).replaceAll("_"," ");
                             if ( queryNumber == 1 ) {
-                                list.add(new Tuple3<>(s.getString(0), citiesArray.get(i - 1), ( s.isNullAt(i) ||  !s.getString(i).equals("sky is clear") ) ? 0.0 : 1.0));
+                                list.add(new Tuple3<>(s.getString(0), city, ( s.isNullAt(i) ||  !s.getString(i).equals("sky is clear") ) ? 0.0 : 1.0));
                             }else {
-                                list.add(new Tuple3<>( s.getString(0) , citiesArray.get(i - 1)  , ( s.isNullAt(i) || s.getString(i).isEmpty() ) ?    0.0 : Double.parseDouble(s.getString(i)) ) );
+                                list.add(new Tuple3<>( s.getString(0) , city , ( s.isNullAt(i) || s.getString(i).isEmpty() ) ?    0.0 : Double.parseDouble(s.getString(i)) ) );
                             }
                         }
 

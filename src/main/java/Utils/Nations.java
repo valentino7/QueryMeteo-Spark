@@ -22,7 +22,8 @@ public class Nations {
         inputData = spark.read().csv(Constants.HDFS + Constants.CITY_FILE);
        */
 
-        Dataset<Row> inputData = spark.read().option("header","true").csv(Constants.HDFS + Constants.CITY_FILE);
+        Dataset<Row> inputData = spark.read().option("header","true").parquet(Constants.HDFS + Constants.CITY_FILE);
+
         JavaPairRDD<String, Tuple2<String, String>> city_nations = inputData
                 .toJavaRDD()
                 .mapToPair(Nations::findNation);

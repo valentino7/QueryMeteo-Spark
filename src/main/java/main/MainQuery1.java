@@ -38,7 +38,7 @@ public class MainQuery1 {
         inputData = spark.read().csv(Constants.HDFS +Constants.WEATHER_FILE);
         */
 
-        Dataset<Row> inputData = spark.read().option("header","true").csv(Constants.HDFS +Constants.WEATHER_FILE);
+        Dataset<Row> inputData = spark.read().option("header","true").parquet(Constants.HDFS +Constants.WEATHER_FILE);
 
         sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
 

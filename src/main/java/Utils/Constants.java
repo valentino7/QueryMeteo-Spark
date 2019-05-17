@@ -4,9 +4,9 @@ public class Constants {
 
     public static final String MASTER ="local";
     public static final int STATISTICS_FILE = 3;
-    public static final String[] FILE = {"temperature.parquet","pressure.parquet","humidity.parquet"};
-    public static final String CITY_FILE ="city_attributes.csv";
-    public static final String WEATHER_FILE ="weather_description.csv";
+    public static final String[] FILE = {"temperature.csv","pressure.csv","humidity.csv"};
+    public static final String CITY_FILE ="city_attributes.parquet";
+    public static final String WEATHER_FILE ="weather_description.parquet";
     public static final String PRESSURE_FILE ="pressure.csv";
     public static final String TEMPERATURE_FILE ="temperature.csv";
     public static final String HUMIDITY_FILE ="humidity.csv";

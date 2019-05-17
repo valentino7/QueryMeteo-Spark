@@ -103,7 +103,7 @@ public class Query1_v2 {
                 .map(tuple -> new Gson().toJson(tuple));
 
 
-        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query1");
+        toJson.saveAsTextFile("results/query1");
         //toJson.saveAsTextFile("results/query1");
 
 
