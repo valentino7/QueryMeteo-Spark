@@ -30,8 +30,8 @@ public class MainQuery1 {
         //startTimer
         SparkSession spark = Context.getContext("query1");
 
-        Dataset<Row> inputData = spark.read().parquet(Constants.HDFS_INPUT +Constants.WEATHER_FILE_CSV);
-        Dataset<Row> city_file = spark.read().parquet(Constants.HDFS_INPUT +Constants.CITY_FILE_CSV);
+        Dataset<Row> inputData = spark.read().parquet(Constants.HDFS_INPUT +Constants.WEATHER_FILE_PARQUET);
+        Dataset<Row> city_file = spark.read().parquet(Constants.HDFS_INPUT +Constants.CITY_FILE_PARQUET);
 
         //Dataset<Row> inputData = spark.read().csv(Constants.HDFS +Constants.WEATHER_FILE);
 
@@ -55,7 +55,7 @@ public class MainQuery1 {
 
         //startTime
 
-        SQLQuery1.executeQuery(spark,data);
+        //SQLQuery1.executeQuery(spark,data);
 
 //stop time
 
