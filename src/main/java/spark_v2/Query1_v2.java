@@ -99,7 +99,7 @@ public class Query1_v2 {
             System.out.println(x + "  " + map.get(x));
         }*/
 
-       citiesWithClearSky.collect();
+       citiesWithClearSky.cache();
         /*JavaRDD<String> toJson = citiesWithClearSky
                 .map(tuple -> new Gson().toJson(tuple));
 

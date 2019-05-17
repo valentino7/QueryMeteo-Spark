@@ -34,7 +34,6 @@ public class Nations {
     public static Tuple2<String, Tuple2<String, String> > findNation (Row row){
         // funzione per prendere la nazione tramite la stringa : chiamata ad un API oppure ricerca in un file in locale
 
-
         String city = row.getString(0);
         String lat = row.getString(1);
         String lon = row.getString(2);

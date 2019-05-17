@@ -27,10 +27,10 @@ public class TestQuery1 {
         PrintWriter writer = null;
 
         try {
-            writer = new PrintWriter("test/file.txt");
+            writer = new PrintWriter("test/file2.txt");
 
 
-            for (int j = 0; j < 1; j++) {
+            for (int j = 0; j < 2; j++) {
 
                 for (int i = 0; i < 10; i++) {
                     Stopwatch watchPre = Stopwatch.createStarted();
@@ -39,14 +39,14 @@ public class TestQuery1 {
                     Dataset<Row> city_data = null;
                     switch (j) {
                         case 0:
-                            inputData = spark.read().option("header", "true").csv("input/" + Constants.WEATHER_FILE_CSV);
-                            city_data = spark.read().option("header","true").csv("input/"+ Constants.CITY_FILE_CSV);
+                            inputData = spark.read().option("header", "true").csv(Constants.HDFS + Constants.WEATHER_FILE_CSV);
+                            city_data = spark.read().option("header","true").csv(Constants.HDFS + Constants.CITY_FILE_CSV);
                             country = Nations.getNation(spark ,city_data);
                             break;
 
                         case 1:
-                            inputData = spark.read().option("header", "true").parquet("input/" + Constants.WEATHER_FILE_PARQUET);
-                            city_data = spark.read().option("header","true").csv("input/"+ Constants.CITY_FILE_PARQUET);
+                            inputData = spark.read().option("header", "true").parquet(Constants.HDFS  + Constants.WEATHER_FILE_PARQUET);
+                            city_data = spark.read().option("header","true").parquet(Constants.HDFS + Constants.CITY_FILE_PARQUET);
                             country = Nations.getNation(spark, city_data);
                             break;
                     }
@@ -54,12 +54,12 @@ public class TestQuery1 {
                     JavaRDD<Tuple3<String, String, Double>> values = AllQueryPreProcess.executePreProcess(inputData, 1).cache();
                     JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country, values).cache();
                     watchPre.stop();
-                    writer.println("Preprocessing "+watchPre.toString());
+                    writer.println("Preprocessing " + "\t"+j +watchPre.toString());
 
                     Stopwatch watchExe = Stopwatch.createStarted();
                     Query1_v2.executeQuery(data);
                     watchExe.stop();
-                    writer.println("Execution "+watchExe.toString());
+                    writer.println("Execution "+ "\t"+j +watchExe.toString());
 
                 }
             }
