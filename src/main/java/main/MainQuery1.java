@@ -1,6 +1,7 @@
 package main;
 
 import Utils.*;
+import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -23,39 +24,47 @@ import java.util.Map;
 
 public class MainQuery1 {
 
-    public static void main(String[] args) {
 
-        SparkSession spark = SparkSession
-                .builder()
-                .appName("Java Spark SQL query1").master("local")
-                //.config("spark.some.config.option", "some-value")
-                .getOrCreate();
+    public static void executeMain() {
 
-        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
+        //startTimer
+        SparkSession spark = Context.getContext("query1");
 
         /*
         inputData = spark.read().parquet(Constants.HDFS +Constants.WEATHER_FILE);
         inputData = spark.read().csv(Constants.HDFS +Constants.WEATHER_FILE);
         */
 
-        Dataset<Row> inputData = spark.read().option("header","true").parquet(Constants.HDFS +Constants.WEATHER_FILE);
-
-        sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
+        Dataset<Row> inputData = spark.read().option("header","true").csv("input/" +Constants.WEATHER_FILE_CSV);
+        Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);
 
         //Nations
-        Map<String, Tuple2<String,String>> country = Nations.getNation(spark);
+        Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
 
         JavaRDD<Tuple3<String,String,Double>> values = AllQueryPreProcess.executePreProcess(inputData,1).cache();
 
         JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country,values).cache();
 
 
+//stop time
+       //startTime
         Query1_v2.executeQuery(data);
 
+//stop time
 
-        //SQLQuery1.executeQuery(spark,data);
+        //startTime
 
+        SQLQuery1.executeQuery(spark,data);
+
+//stop time
 
         spark.stop();
+
     }
+
+    public static void main(String[] args) {
+
+        MainQuery1.executeMain();
+    }
+
 }

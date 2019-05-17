@@ -2,16 +2,24 @@ package Utils;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
 
 public class Context {
 
-    public static JavaSparkContext getContext(String name){
+    public static SparkSession getContext(String name){
 
         // SparkContext creation
-        SparkConf conf = new SparkConf()
-                .setMaster(Constants.MASTER)
-                .setAppName(name);
-        return new JavaSparkContext(conf);
+        //startTimer
+        SparkSession spark = SparkSession
+                .builder()
+                .appName(name).master(Constants.MASTER)
+                //.config("spark.some.config.option", "some-value")
+                .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
+        sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
+
+        return spark;
     }
 
 }

@@ -1,5 +1,6 @@
 package Utils;
 
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
@@ -41,4 +42,6 @@ public class AllQueryPreProcess {
                 });
 
     }
+
+
 }

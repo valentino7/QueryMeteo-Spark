@@ -33,11 +33,14 @@ public class MainQuery3 {
         Dataset<Row> inputData = spark.read().parquet(Constants.HDFS +Constants.TEMPERATURE_FILE);
 
         //Nations
-        Map<String, Tuple2<String,String>> nations = Nations.getNation(spark);
+        Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);
+
+        //Nations
+        Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
 
         JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(inputData,3);
 
-        JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(nations,valuesq3);
+        JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(country,valuesq3);
 
         //getTIme
         Query3_v2.executeQuery(preprocess);

@@ -15,14 +15,14 @@ import java.util.Map;
 public class Nations {
 
     // (città) -> (ISO,Timezone)
-    public static Map<String, Tuple2<String,String>> getNation(SparkSession spark) {
+    public static Map<String, Tuple2<String,String>> getNation(SparkSession spark,Dataset<Row> inputData) {
 
        /*
         inputData = spark.read().parquet(Constants.HDFS + Constants.CITY_FILE);
         inputData = spark.read().csv(Constants.HDFS + Constants.CITY_FILE);
        */
 
-        Dataset<Row> inputData = spark.read().option("header","true").parquet(Constants.HDFS + Constants.CITY_FILE);
+
 
         JavaPairRDD<String, Tuple2<String, String>> city_nations = inputData
                 .toJavaRDD()

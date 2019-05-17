@@ -29,7 +29,10 @@ public class MainQuery2 {
 
         sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
         //Nations
-        Map<String, Tuple2<String,String>> nations = Nations.getNation(spark);
+        Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);
+
+        //Nations
+        Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
 
         for (int i = 0; i < Constants.STATISTICS_FILE; i++) {
 
@@ -38,7 +41,7 @@ public class MainQuery2 {
             JavaRDD<Tuple3<String, String, Double>> valuesq2 = AllQueryPreProcess.executePreProcess(inputData,  2);
 
             // (Year,Month,Nation) , (Value, count)
-            JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> dt = Query2Preprocess.executeProcess(nations, valuesq2, i);
+            JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> dt = Query2Preprocess.executeProcess(country, valuesq2, i);
 
            // Query2_v2.executeQuery(dt, i);
 
