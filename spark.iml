@@ -182,5 +182,6 @@
     <orderEntry type="library" name="Maven: com.vlkan:flatbuffers:1.2.0-3f79e055" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb.spark:mongo-spark-connector_2.12:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongo-java-driver:3.9.0" level="project" />
+    <orderEntry type="library" name="Maven: org.geonames:geonames:1.1" level="project" />
   </component>
 </module>

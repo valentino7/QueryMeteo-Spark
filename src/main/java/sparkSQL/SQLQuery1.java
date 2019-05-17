@@ -2,6 +2,7 @@ package sparkSQL;
 
 
 import Utils.Constants;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -84,7 +85,7 @@ public class SQLQuery1 {
                            "ORDER BY year");
 
         //result.show();
-        result.write().csv("hdfs://172.18.0.5:54310/SQLquery1");
+        result.write().csv(Constants.HDFS_MONGO_QUERY1_SQL);
 
     }
 

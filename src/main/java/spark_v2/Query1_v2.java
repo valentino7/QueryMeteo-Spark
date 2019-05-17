@@ -1,6 +1,7 @@
 package spark_v2;
 
 
+import Utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -100,11 +101,11 @@ public class Query1_v2 {
         }*/
 
        citiesWithClearSky.collect();
-        /*JavaRDD<String> toJson = citiesWithClearSky
+       JavaRDD<String> toJson = citiesWithClearSky
                 .map(tuple -> new Gson().toJson(tuple));
 
 
-        toJson.saveAsTextFile("results/query1");*/
+        toJson.saveAsTextFile(Constants.HDFS_MONGO_QUERY1);
         //toJson.saveAsTextFile("results/query1");
 
 
