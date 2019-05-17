@@ -30,13 +30,14 @@ public class MainQuery1 {
         //startTimer
         SparkSession spark = Context.getContext("query1");
 
-        /*
-        inputData = spark.read().parquet(Constants.HDFS +Constants.WEATHER_FILE);
-        inputData = spark.read().csv(Constants.HDFS +Constants.WEATHER_FILE);
-        */
+        Dataset<Row> inputData = spark.read().parquet(Constants.HDFS_INPUT +Constants.WEATHER_FILE_CSV);
+        Dataset<Row> city_file = spark.read().parquet(Constants.HDFS_INPUT +Constants.CITY_FILE_CSV);
 
-        Dataset<Row> inputData = spark.read().option("header","true").csv("input/" +Constants.WEATHER_FILE_CSV);
-        Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);
+        //Dataset<Row> inputData = spark.read().csv(Constants.HDFS +Constants.WEATHER_FILE);
+
+
+        /*Dataset<Row> inputData = spark.read().option("header","true").csv("input/" +Constants.WEATHER_FILE_CSV);*/
+        //Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);
 
         //Nations
         Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
