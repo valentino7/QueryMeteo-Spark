@@ -39,13 +39,13 @@ public class TestQuery1 {
                     Dataset<Row> city_data = null;
                     switch (j) {
                         case 0:
-                            inputData = spark.read().option("header", "true").csv(Constants.HDFS + Constants.WEATHER_FILE_CSV);
-                            city_data = spark.read().option("header","true").csv(Constants.HDFS + Constants.CITY_FILE_CSV);
+                            inputData = spark.read().option("header", "true").csv(Constants.HDFS_INPUT + Constants.WEATHER_FILE_CSV);
+                            city_data = spark.read().option("header","true").csv(Constants.HDFS_INPUT + Constants.CITY_FILE_CSV);
                             break;
 
                         case 1:
-                            inputData = spark.read().option("header", "true").parquet(Constants.HDFS  + Constants.WEATHER_FILE_PARQUET);
-                            city_data = spark.read().option("header","true").parquet(Constants.HDFS + Constants.CITY_FILE_PARQUET);
+                            inputData = spark.read().option("header", "true").parquet(Constants.HDFS_INPUT  + Constants.WEATHER_FILE_PARQUET);
+                            city_data = spark.read().option("header","true").parquet(Constants.HDFS_INPUT + Constants.CITY_FILE_PARQUET);
                             break;
                     }
 
@@ -56,7 +56,7 @@ public class TestQuery1 {
                     writer.println("Preprocessing " + "\t"+j +watchPre.toString());
 
                     Stopwatch watchExe = Stopwatch.createStarted();
-                    Query1_v2.executeQuery(spark,data);
+                    Query1_v2.executeQuery(data);
                     watchExe.stop();
                     writer.println("Execution "+ "\t"+j +watchExe.toString());
 

@@ -16,7 +16,7 @@ public class Constants {
     public static final int FILE_TYPE =0;
     public static final int NUM_OF_FILE =2;
 
-    public static final String HDFS_ROOT="hdfs://192.168.64.5:54310/";
+    public static final String HDFS_ROOT="hdfs://192.168.64.8:54310/";
     public static final String HDFS_HBASE_QUERY1 =HDFS_ROOT+"results/hbase/query1";
     public static final String HDFS_HBASE_QUERY2 =HDFS_ROOT+"results/hbase/query2/file";
     public static final String HDFS_HBASE_QUERY3 =HDFS_ROOT+"results/hbase/query3";

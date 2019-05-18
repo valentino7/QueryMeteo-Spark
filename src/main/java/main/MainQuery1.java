@@ -10,7 +10,11 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
@@ -21,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.spark.sql.types.DataTypes.createArrayType;
+import static org.apache.spark.sql.types.DataTypes.createStructField;
 
 public class MainQuery1 {
 
@@ -48,6 +55,18 @@ public class MainQuery1 {
         JavaPairRDD<Integer, Iterable<String>> result = Query1_v2.executeQuery(data);
 
 
+        StructType schemata = DataTypes.createStructType(
+                new StructField[]{
+                        createStructField("Year", DataTypes.IntegerType, true),
+                        createStructField("City", DataTypes.createArrayType(DataTypes.StringType), true),
+                });
+        //JavaPairRDD<Integer, String> results = (JavaPairRDD<Integer, String>) result.getResultObject();
+
+        JavaRDD<Row> rows = result.map(t -> {
+            return RowFactory.create(t._1(), t._2());
+        });
+        System.out.println(rows.collect());
+        Dataset<Row> resultsDS = spark.sqlContext().createDataFrame(rows, schemata);
 
 //stop time
        //startTime
