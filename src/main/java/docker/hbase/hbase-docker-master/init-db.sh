@@ -1,7 +1,7 @@
 docker exec -i  gallant_mendel hbase shell << EOF
-  create 'test', 'cf'
+  create 'results', 'query1'
   list
-  put 'test', 'row1', 'cf:a', 'value1'
-  scan 'test'
+  put 'results', 'row1', 'query1:a', 'value1'
+  scan 'results'
 EOF
  

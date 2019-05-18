@@ -56,7 +56,7 @@ public class TestQuery1 {
                     writer.println("Preprocessing " + "\t"+j +watchPre.toString());
 
                     Stopwatch watchExe = Stopwatch.createStarted();
-                    Query1_v2.executeQuery(data);
+                    Query1_v2.executeQuery(spark,data);
                     watchExe.stop();
                     writer.println("Execution "+ "\t"+j +watchExe.toString());
 
