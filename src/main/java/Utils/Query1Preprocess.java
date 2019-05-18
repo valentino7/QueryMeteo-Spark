@@ -20,6 +20,17 @@ public class Query1Preprocess {
 
     public static JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> executeProcess(Map<String, Tuple2<String,String>> nations,JavaRDD<Tuple3<String,String,Double>> values) {
 
+        /*
+        .mapToPair :return RDD<K,V> where:
+                        K = ( year , month , day , city )
+                        V = 0 or 1
+                            1 : description was "sky is clear"
+                            0 : other
+
+        .filter :
+             RDD<(year,month,day,city), value > on Month: March.April,May
+
+*/
         return values
                 .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple4<Integer,Integer,Integer,String>, Double>() {
                     @Override

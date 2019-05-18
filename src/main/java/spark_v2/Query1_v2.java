@@ -23,20 +23,9 @@ import java.util.*;
 public class Query1_v2 {
 
 
-    public static void executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
+    public static JavaPairRDD<Integer, Iterable<String>> executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
 
         /*
-        .filter : Remove Header
-
-        .flatMapToPair :
-            RDD<String> to RDD<K,V> where:
-                K = ( year , month , day , city )
-                V = 0 or 1
-                    1 : description was "sky is clear"
-                    0 : other
-
-        .filter :
-            RDD<(year,month,day,city), value > on Month: March.April,May
 
         .reduceByKey :
             Sum values with same day:
@@ -91,7 +80,8 @@ public class Query1_v2 {
                 .filter(v1 -> v1._2()>=3)
                 .mapToPair(Tuple2::_1)
                 .groupByKey()
-                .sortByKey();
+                .sortByKey()
+                .cache();
 
        /* Map<Integer, Iterable<String>> map = citiesWithClearSky.collectAsMap();
 
@@ -99,7 +89,7 @@ public class Query1_v2 {
             System.out.println(x + "  " + map.get(x));
         }*/
 
-       citiesWithClearSky.cache();
+       return citiesWithClearSky;
         /*JavaRDD<String> toJson = citiesWithClearSky
                 .map(tuple -> new Gson().toJson(tuple));
 

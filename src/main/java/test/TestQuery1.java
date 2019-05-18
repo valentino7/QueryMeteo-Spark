@@ -41,16 +41,15 @@ public class TestQuery1 {
                         case 0:
                             inputData = spark.read().option("header", "true").csv(Constants.HDFS + Constants.WEATHER_FILE_CSV);
                             city_data = spark.read().option("header","true").csv(Constants.HDFS + Constants.CITY_FILE_CSV);
-                            country = Nations.getNation(spark ,city_data);
                             break;
 
                         case 1:
                             inputData = spark.read().option("header", "true").parquet(Constants.HDFS  + Constants.WEATHER_FILE_PARQUET);
                             city_data = spark.read().option("header","true").parquet(Constants.HDFS + Constants.CITY_FILE_PARQUET);
-                            country = Nations.getNation(spark, city_data);
                             break;
                     }
 
+                    country = Nations.getNation(spark ,city_data);
                     JavaRDD<Tuple3<String, String, Double>> values = AllQueryPreProcess.executePreProcess(inputData, 1).cache();
                     JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country, values).cache();
                     watchPre.stop();

@@ -45,10 +45,13 @@ public class MainQuery1 {
 
         JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country,values).cache();
 
+        JavaPairRDD<Integer, Iterable<String>> result = Query1_v2.executeQuery(data);
+
+
 
 //stop time
        //startTime
-        Query1_v2.executeQuery(data);
+
 
 //stop time
 
