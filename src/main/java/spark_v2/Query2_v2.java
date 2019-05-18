@@ -1,6 +1,7 @@
 package spark_v2;
 
 
+import Utils.Constants;
 import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -173,9 +174,7 @@ public class Query2_v2 {
 
 
         //String json = new Gson.tojson(classe);
-
-
-        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query2/file"+fileType);
+        toJson.saveAsTextFile(Constants.HDFS_MONGO_QUERY2 +fileType);
 
     }
 }

@@ -30,7 +30,7 @@ public class MainQuery3 {
 
         sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
 
-        Dataset<Row> inputData = spark.read().parquet(Constants.HDFS +Constants.TEMPERATURE_FILE);
+        Dataset<Row> inputData = spark.read().parquet(Constants.HDFS_INPUT +Constants.TEMPERATURE_FILE);
 
         //Nations
         Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);

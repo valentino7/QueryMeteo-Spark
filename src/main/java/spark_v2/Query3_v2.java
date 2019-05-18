@@ -1,5 +1,6 @@
 package spark_v2;
 
+import Utils.Constants;
 import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -122,7 +123,7 @@ public class Query3_v2 {
        JavaRDD<String> toJson = result2017
                .map(tuple -> new Gson().toJson(tuple));
 
-        toJson.saveAsTextFile("hdfs://172.18.0.5:54310/results/query3");
+        toJson.saveAsTextFile(Constants.HDFS_MONGO_QUERY3);
 
         //GetTime
     }

@@ -36,7 +36,7 @@ public class MainQuery2 {
 
         for (int i = 0; i < Constants.STATISTICS_FILE; i++) {
 
-            Dataset<Row> inputData = spark.read().parquet(Constants.HDFS +Constants.FILE[i]);
+            Dataset<Row> inputData = spark.read().parquet(Constants.HDFS_INPUT +Constants.FILE[i]);
 
             JavaRDD<Tuple3<String, String, Double>> valuesq2 = AllQueryPreProcess.executePreProcess(inputData,  2);
 
