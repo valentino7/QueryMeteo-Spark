@@ -1,6 +1,7 @@
 package main;
 
 import Utils.*;
+import com.twitter.chill.java.ArraysAsListSerializer;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -18,9 +19,12 @@ import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
+import scala.collection.immutable.Seq;
 import sparkSQL.SQLQuery1;
 import spark_v2.Query1_v2;
 
+import javax.xml.crypto.Data;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +35,25 @@ import static org.apache.spark.sql.types.DataTypes.createStructField;
 
 public class MainQuery1 {
 
+
+    public static Dataset<Row> convertToDataset(SparkSession spark,JavaPairRDD<Integer, Iterable<String>> result){
+        List<StructField> fields = new ArrayList<>();
+        fields.add(DataTypes.createStructField("year", DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField("cities", DataTypes.createArrayType(DataTypes.StringType), true));
+        StructType schemata = DataTypes.createStructType(fields);
+
+
+        JavaRDD<Row> rows = result.map(t -> {
+            ArrayList<String> tam= new ArrayList<>();
+            for (String te: t._2 ) {
+                tam.add(te);
+            }
+            String[] item = tam.toArray(new String[tam.size()]);
+            return RowFactory.create(t._1(), item  );
+        });
+        Dataset<Row> resultsDS = spark.sqlContext().createDataFrame(rows, schemata);
+        return resultsDS;
+    }
 
     public static void executeMain() {
 
@@ -54,19 +77,12 @@ public class MainQuery1 {
 
         JavaPairRDD<Integer, Iterable<String>> result = Query1_v2.executeQuery(data);
 
+        Dataset<Row> resultsDS= convertToDataset(spark,result);
+        resultsDS.show();
+        resultsDS.write().format("parquet").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
+        //resultsDS.write().format("csv").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
+        //resultsDS.write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY1);
 
-        StructType schemata = DataTypes.createStructType(
-                new StructField[]{
-                        createStructField("Year", DataTypes.IntegerType, true),
-                        createStructField("City", DataTypes.createArrayType(DataTypes.StringType), true),
-                });
-        //JavaPairRDD<Integer, String> results = (JavaPairRDD<Integer, String>) result.getResultObject();
-
-        JavaRDD<Row> rows = result.map(t -> {
-            return RowFactory.create(t._1(), t._2());
-        });
-        System.out.println(rows.collect());
-        Dataset<Row> resultsDS = spark.sqlContext().createDataFrame(rows, schemata);
 
 //stop time
        //startTime
@@ -76,7 +92,7 @@ public class MainQuery1 {
 
         //startTime
 
-        SQLQuery1.executeQuery(spark,data);
+        //SQLQuery1.executeQuery(spark,data);
 
 //stop time
 
