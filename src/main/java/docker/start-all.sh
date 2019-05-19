@@ -22,7 +22,7 @@ docker cp ./hbase/hbase-site.xml hbase:/hbase/conf/hbase-site.xml
 ./mongo/mongo-server-start.sh
 
 #SPARK
-HOST_HDFS= docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' master
+HOST_HDFS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' master)
 cd ./spark
 docker-compose up -d
 docker exec spark_master /bin/bash -c '$SPARK_HOME/bin/spark-submit --class MainQuery2 --master "local" target/handson-spark-1.0.jar'
