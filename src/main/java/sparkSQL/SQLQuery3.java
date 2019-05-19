@@ -146,7 +146,7 @@ public class SQLQuery3 {
 
         //compareRanks.show();
 
-        compareRanks.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY3_SQL );
+        compareRanks.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY3_SQL);
 
     }
 }

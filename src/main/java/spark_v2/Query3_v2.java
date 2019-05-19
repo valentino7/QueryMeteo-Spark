@@ -8,6 +8,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.VoidFunction;
 import scala.*;
 
 import java.lang.Boolean;
@@ -17,18 +18,33 @@ import java.util.*;
 
 public class Query3_v2 {
 
-    public static void executeQuery(JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values){
+    public static JavaPairRDD<String, List<Tuple2<String,Integer> >>  executeQuery(JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values){
 
-        //GetTime
+        /*
+
+        input :
+               (Year,Month,Hour,City,Country), (Temp,Count)
+
+        .filter:
+                2016<=years<=2017
+                1<=month<=4 & 6<=month<=9
+                12<=hour<=15
+
+        .mapToPair : remove hour from tuple in key and add indicator for 4 Month
+                K : tuple5 (Year,Month,Hour,City,Country)  -> tuple4 (Year,4Month,City,Country)
+                                                                     1<=Month<=4  ->  4Month = 1
+                                                                     6<=Month<=9  ->  4Month = 2
+                V : same (Temp,Count)
+
+        .reduceByKey : calculate sum temperature and sum count for same (Year,4Month,Hour,City,Country)
+
+         */
 
         JavaPairRDD<Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>> temp = values
                 .filter(new Function<Tuple2<Tuple5<Integer,Integer,Integer, String, String>, Tuple2<Double,Double > >, Boolean>() {
                     @Override
                     public Boolean call(Tuple2<Tuple5<Integer,Integer,Integer, String, String>, Tuple2<Double,Double >> v1) throws Exception {
-                        if ( (v1._1()._1()>= 2016)&(v1._1()._3() >= 12  & v1._1()._3() <= 15) & (  (v1._1()._2() >= 6 & v1._1()._2() <= 9 ) || ( (v1._1()._2() >= 1 & v1._1()._2() <= 4) )  ) ){
-                            return true;
-                        }
-                        else return false;
+                        return (v1._1()._1() >= 2016) & (v1._1()._3() >= 12 & v1._1()._3() <= 15) & ((v1._1()._2() >= 6 & v1._1()._2() <= 9) || ((v1._1()._2() >= 1 & v1._1()._2() <= 4)));
                     }
                 })
                 .mapToPair(new PairFunction<Tuple2<Tuple5<Integer, Integer, Integer, String, String>, Tuple2<Double, Double>>, Tuple4<Integer, Integer, String, String>, Tuple2<Double, Double>>() {
@@ -48,9 +64,24 @@ public class Query3_v2 {
                 .cache();
 
 
+          /*
+
+        .mapValues: calculate average temperature sumTemperature/sumCount
+
+
+        .mapToPair : remove 4Month from tuple in key
+                K : tuple4 (Year,4Month,City,Country)  -> tuple3 (Year,City,Country)
+                V : same (Temp,Count)
+
+        .reduceByKey : calculate mean temperature differenze (in module) for same (Year,City,Country)
+
+         */
 
 
 
+
+        // ( anno, nazione, citta) -> valore
+        //( anno, nazione ) -> (Lista ordinata di città)
         JavaPairRDD<Tuple2<Integer, String>, Iterable<String>> result = temp
                 .mapValues(new Function<Tuple2<Double, Double>, Double>() {
                     @Override
@@ -65,16 +96,45 @@ public class Query3_v2 {
                     }
                 })
                 .reduceByKey(new Function2<Double, Double, Double>() {
-            @Override
-            public Double call(Double v1, Double v2) throws Exception {
-                return Math.abs(v1-v2);
-            }
-        })
+                    @Override
+                    public Double call(Double v1, Double v2) throws Exception {
+                        return Math.abs(v1-v2);
+                    }
+                })
+
                 .mapToPair(tuple -> new Tuple2<>(tuple._2(), tuple._1()))
                 .sortByKey(Comparator.reverseOrder())
                 .mapToPair(tuple -> new Tuple2<>(new Tuple2<>(tuple._2()._1(),tuple._2()._2()), tuple._2()._3()))
                 .groupByKey()
+                /* .mapToPair(tuple -> {
+                     if (tuple._1._1 == 2017){
+                         return new Tuple2<>(tuple._1._2(),new Tuple2<>(tuple._1._1(),Iterables.limit(tuple._2(),3)));
+                     }
+                     else {
+                         return new Tuple2<>(tuple._1._2(), new Tuple2<>(tuple._1._1(), tuple._2()));
+                     }
+                 })
+                 //.groupByKey()
+                 .mapValues( value -> {
+                     Rank ranking = new Rank();
+
+                     Iterable<String> tempValue = value._2;
+                     ranking.setYear(value._1());
+                     List<String> r = new ArrayList<>();
+                     while(tempValue.iterator().hasNext()) {
+                         r.add(tempValue.iterator().next());
+                     }
+                     ranking.setCityRank(r);
+                     return ranking;
+                 })
+                 .reduceByKey(new Function2<Rank, Rank, Rank>() {
+                     @Override
+                     public Rank call(Rank rank, Rank rank2) throws Exception {
+                         return null;
+                     }
+                 })*/
                 .cache();
+
 
 
         JavaPairRDD<String, Iterable<String>> result2016 = result
@@ -91,12 +151,8 @@ public class Query3_v2 {
             rank2016list.put(s,l);
         }
 
-        for ( String t : rank2016list.keySet() ){
-            System.out.println(t + "\t" + rank2016list.get(t));
-        }
 
-
-        JavaPairRDD<String, List<Tuple2<String,Integer> >> result2017 = result
+        return result
                 .filter( t -> t._1()._1() == 2017)
                 .mapToPair( t -> new Tuple2<>(t._1()._2(),t._2()))
                 .mapValues(new Function<Iterable<String>, Iterable<String>>() {
@@ -116,14 +172,15 @@ public class Query3_v2 {
                         }
                         return new Tuple2<>(v1._1(),listToreturn);
                     }
-                });
+                })
+                .cache();
 
 
-       //GetTime
-       JavaRDD<String> toJson = result2017
-               .map(tuple -> new Gson().toJson(tuple));
+        //GetTime
+        /*JavaRDD<String> toJson = result2017
+                .map(tuple -> new Gson().toJson(tuple));
 
-        toJson.saveAsTextFile(Constants.HDFS_MONGO_QUERY3);
+        toJson.saveAsTextFile(Constants.HDFS_MONGO_QUERY3);*/
 
         //GetTime
     }
