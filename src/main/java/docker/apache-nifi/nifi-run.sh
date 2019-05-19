@@ -20,11 +20,12 @@ docker cp ./nifi-deploy-config-1.1.32.jar nifi:/nifi-deploy-config-1.1.32.jar
 
 
 #printf 'waiting for NiFi...\n'
-#until $(curl --output /dev/null --silent --head --fail http://$HOST:$PORT); do
-#    printf '.'
-#    sleep 5
-#done
+NIFI_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nifi)
+until $(curl --output /dev/null --silent --head --fail http://$NIFI_HOST:$PORT); do
+    printf '.'
+    sleep 5
+done
 
-#docker exec -it nifi java -jar /nifi-deploy-config-1.1.32.jar -nifi http://172.18.0.6:9999/nifi-api -conf /TemplateFinal.xml -m deployTemplate
+docker exec -it nifi java -jar /nifi-deploy-config-1.1.32.jar -nifi http://172.18.0.6:9999/nifi-api -conf /TemplateFinal.xml -m deployTemplate
 
 
