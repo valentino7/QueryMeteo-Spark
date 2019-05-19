@@ -23,7 +23,7 @@ import java.util.*;
 public class Query1_v2 {
 
 
-    public static JavaPairRDD<Integer, Iterable<String>> executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
+    public static JavaPairRDD<Integer, String> executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){
 
         /*
 
@@ -59,7 +59,7 @@ public class Query1_v2 {
 
 
 
-        JavaPairRDD<Integer, Iterable<String>> citiesWithClearSky = values
+        JavaPairRDD<Integer, String> citiesWithClearSky = values
                 .reduceByKey(Double::sum)
                 .mapToPair((PairFunction<Tuple2<Tuple4<Integer, Integer, Integer, String>, Double>, Tuple3<Integer, Integer, String>, Integer>) tuple -> {
                     if (tuple._2 >= 18.0){ //se almeno 12 ore in un giorno sono serene
@@ -79,7 +79,6 @@ public class Query1_v2 {
                 .reduceByKey(Integer::sum)
                 .filter(v1 -> v1._2()>=3)
                 .mapToPair(Tuple2::_1)
-                .groupByKey()
                 .sortByKey()
                 .cache();
 

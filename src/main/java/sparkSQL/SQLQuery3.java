@@ -1,5 +1,6 @@
 package sparkSQL;
 
+import Utils.Constants;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -137,13 +138,15 @@ public class SQLQuery3 {
 
         //confronto tra rank delle città nel 2017 e nel 2016
         Dataset<Row> compareRanks = spark.sql(
-                "SELECT r1.nation, r1.city, r2.year, r2.rank, r1.year, r1.rank " +
+                "SELECT r1.nation, r1.city, r2.year as currentYear, r2.rank as currentPosition, r1.year as lastYear, r1.rank as LastPosition " +
                         "FROM rank2016 as r1 JOIN rank2017 as r2 " +
                         "ON r1.nation == r2.nation AND r1.city == r2.city " +
                         "GROUP BY r1.year, r2.year, r1.nation, r2.nation, r1.city, r2.city, r1.rank, r2.rank, r1.sub_temp, r2.sub_temp " +
                         "ORDER BY r1.nation, r2.rank");
 
-        compareRanks.show();
+        //compareRanks.show();
+
+        compareRanks.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY3_SQL );
 
     }
 }

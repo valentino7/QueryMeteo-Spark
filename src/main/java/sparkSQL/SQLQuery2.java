@@ -1,5 +1,6 @@
 package sparkSQL;
 
+import Utils.Constants;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -22,7 +23,7 @@ import static org.apache.spark.sql.functions.stddev_pop;
 
 public class SQLQuery2 {
 
-    public static void executeQuery(SparkSession spark,JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > values ) {
+    public static void executeQuery(SparkSession spark,JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > values ,int fileType) {
 
 
         //Dataset df = spark.read().format("csv").option("header", "true").load(inputPath2);
@@ -31,7 +32,6 @@ public class SQLQuery2 {
         List<StructField> fields = new ArrayList<>();
         fields.add(DataTypes.createStructField("year", DataTypes.IntegerType, true));
         fields.add(DataTypes.createStructField("month", DataTypes.IntegerType, true));
-
         fields.add(DataTypes.createStructField("country", DataTypes.StringType, true));
         fields.add(DataTypes.createStructField("value", DataTypes.DoubleType, true));
         fields.add(DataTypes.createStructField("count", DataTypes.DoubleType, true));
@@ -55,12 +55,14 @@ public class SQLQuery2 {
         df.createOrReplaceTempView("statistics");
         //conteggio del cielo sereno per ogni città, per ogni giorno, per ogni mese
         Dataset<Row> stat = spark.sql(
-                "SELECT country, month, year, MEAN(value) AS mean ,MIN(value) as min, MAX(value) as max, STDDEV_SAMP(value) as stddev " +
+                "SELECT country,year, month, MEAN(value) AS mean ,MIN(value) as min, MAX(value) as max, STDDEV_SAMP(value) as stddev " +
                         "FROM statistics  " +
                         "GROUP BY country,year,month");
 
-        stat.show(5);
+        //stat.show(20);
         //clearSky.sort("year", "month", "day").show();
+
+        stat.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY2_SQL+ fileType );
 
     }
 }

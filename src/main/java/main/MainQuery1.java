@@ -36,23 +36,17 @@ import static org.apache.spark.sql.types.DataTypes.createStructField;
 public class MainQuery1 {
 
 
-    public static Dataset<Row> convertToDataset(SparkSession spark,JavaPairRDD<Integer, Iterable<String>> result){
+    public static Dataset<Row> convertToDataset(SparkSession spark,JavaPairRDD<Integer, String> result){
         List<StructField> fields = new ArrayList<>();
         fields.add(DataTypes.createStructField("year", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("cities", DataTypes.createArrayType(DataTypes.StringType), true));
+        fields.add(DataTypes.createStructField("cities", DataTypes.StringType, true));
         StructType schemata = DataTypes.createStructType(fields);
 
 
         JavaRDD<Row> rows = result.map(t -> {
-            ArrayList<String> tam= new ArrayList<>();
-            for (String te: t._2 ) {
-                tam.add(te);
-            }
-            String[] item = tam.toArray(new String[tam.size()]);
-            return RowFactory.create(t._1(), item  );
+            return RowFactory.create(t._1(), t._2()  );
         });
-        Dataset<Row> resultsDS = spark.sqlContext().createDataFrame(rows, schemata);
-        return resultsDS;
+        return spark.sqlContext().createDataFrame(rows, schemata);
     }
 
     public static void executeMain() {
@@ -65,8 +59,8 @@ public class MainQuery1 {
         inputData = spark.read().csv(Constants.HDFS_INPUT +Constants.WEATHER_FILE);
         */
 
-        Dataset<Row> inputData = spark.read().option("header","true").parquet(Constants.HDFS_INPUT +Constants.WEATHER_FILE_PARQUET);
-        Dataset<Row> city_file = spark.read().option("header","true").parquet(Constants.HDFS_INPUT +Constants.CITY_FILE_PARQUET);
+        Dataset<Row> inputData = spark.read().option("header","true").csv(Constants.HDFS_INPUT +Constants.WEATHER_FILE_CSV);
+        Dataset<Row> city_file = spark.read().option("header","true").csv(Constants.HDFS_INPUT +Constants.CITY_FILE_CSV);
 
         //Nations
         Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
@@ -75,26 +69,17 @@ public class MainQuery1 {
 
         JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country,values).cache();
 
-        JavaPairRDD<Integer, Iterable<String>> result = Query1_v2.executeQuery(data);
+        JavaPairRDD<Integer, String> result = Query1_v2.executeQuery(data);
 
         Dataset<Row> resultsDS= convertToDataset(spark,result);
-        resultsDS.show();
-        resultsDS.write().format("parquet").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
+        //resultsDS.show(100);
+        //resultsDS.write().format("parquet").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
         //resultsDS.write().format("csv").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
-        //resultsDS.write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY1);
+        resultsDS.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY1);
 
 
-//stop time
-       //startTime
+        SQLQuery1.executeQuery(spark,data);
 
-
-//stop time
-
-        //startTime
-
-        //SQLQuery1.executeQuery(spark,data);
-
-//stop time
 
         spark.stop();
 

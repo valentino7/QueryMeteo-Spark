@@ -13,7 +13,7 @@ docker cp ./config/hdfs-site.xml nifi:/opt/nifi/hdfs-site.xml
 docker cp ./hbase/core-site.xml nifi:/opt/nifi/core-site.xml
 docker cp ./hbase/hbase-site.xml nifi:/opt/nifi/hbase-site.xml
 docker cp ./data nifi:/opt/nifi/
-docker cp ./test.xml nifi:/templateFinal.xml
+docker cp ./TemplateFinal.xml nifi:/TemplateFinal.xml
 docker cp ./nifi-deploy-config-1.1.32.jar nifi:/nifi-deploy-config-1.1.32.jar
 
 
@@ -25,6 +25,6 @@ docker cp ./nifi-deploy-config-1.1.32.jar nifi:/nifi-deploy-config-1.1.32.jar
 #    sleep 5
 #done
 
-#docker exec -it nifi java -jar /nifi-deploy-config-1.1.32.jar -nifi http://172.18.0.6:9999/nifi-api -conf /templateFinal.xml -m deployTemplate
+#docker exec -it nifi java -jar /nifi-deploy-config-1.1.32.jar -nifi http://172.18.0.6:9999/nifi-api -conf /TemplateFinal.xml -m deployTemplate
 
 

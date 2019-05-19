@@ -3,6 +3,7 @@ package Utils;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 import scala.Tuple3;
@@ -46,7 +47,9 @@ public class Query2Preprocess {
                         return new Tuple2<>(new Tuple3<>(utcTime.getYear(), utcTime.getMonth().getValue(), nations.get(tuple._2())._1() ), new Tuple2<>( ( (fileType == 0) & (tuple._3() > 400) ) ? tuple._3()/1000 : tuple._3() ,1.0)  );
 
                     }
-                });
+                })
+                 .filter(v1 -> v1._2._1() != 0.0)
+                 .cache();
     }
 
 

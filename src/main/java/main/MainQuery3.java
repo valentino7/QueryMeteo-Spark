@@ -30,7 +30,7 @@ public class MainQuery3 {
 
         sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
 
-        Dataset<Row> inputData = spark.read().parquet(Constants.HDFS_INPUT +Constants.TEMPERATURE_FILE);
+        Dataset<Row> inputData = spark.read().option("header","true").csv(Constants.HDFS_INPUT +Constants.TEMPERATURE_FILE_CSV);
 
         //Nations
         Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);
@@ -47,7 +47,7 @@ public class MainQuery3 {
         //getTIme
 
 
-        //SQLQuery3.executeQuery(spark,preprocess);
+        SQLQuery3.executeQuery(spark,preprocess);
 
 
         spark.stop();

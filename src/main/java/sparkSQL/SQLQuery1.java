@@ -85,7 +85,7 @@ public class SQLQuery1 {
                            "ORDER BY year");
 
         //result.show();
-        result.write().csv(Constants.HDFS_MONGO_QUERY1_SQL);
+        result.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY1_SQL);
 
     }
 
