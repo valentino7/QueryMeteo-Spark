@@ -1,7 +1,6 @@
-docker exec -i  gallant_mendel hbase shell << EOF
-  create 'results', 'query1'
-  list
-  put 'results', 'row1', 'query1:a', 'value1'
-  scan 'results'
+docker exec -i  hbase hbase shell << EOF
+    create 'Query1', 'core','SQL'
+    create 'Query2', 'corePression','coreTemperature','coreHumidity','SQLtemperature','SQLpressure','SQLhumidity'
+    create 'Query3', 'core','SQL'
 EOF
  
