@@ -4,3 +4,4 @@
 ./mongo/mongo-server-stop.sh
 ./spark/spark-stop.sh
 ./hdfs/stop-dockers.sh
+docker volume rm $(docker volume ls -qf dangling=true)
