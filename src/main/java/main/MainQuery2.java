@@ -14,8 +14,8 @@ import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
+import spark.Query2;
 import sparkSQL.SQLQuery2;
-import spark_v2.Query2_v2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +66,8 @@ public class MainQuery2 {
             // (Year,Month,Nation) , (Value, count)
             JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> dt = Query2Preprocess.executeProcess(country, values, i);
 
-            //JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple4<Double, Double ,Double, Double>> result = Query2_v2.executeQuery(dt);
-            Dataset<Row> res = convertToDataset(spark,Query2_v2.executeQuery(dt));
+            //JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple4<Double, Double ,Double, Double>> result = Query2.executeQuery(dt);
+            Dataset<Row> res = convertToDataset(spark, Query2.executeQuery(dt));
 
             //resultsDS.write().format("parquet").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
             //resultsDS.write().format("csv").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);

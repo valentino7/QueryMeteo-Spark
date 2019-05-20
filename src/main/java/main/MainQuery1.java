@@ -1,14 +1,8 @@
 package main;
 
 import Utils.*;
-import com.twitter.chill.java.ArraysAsListSerializer;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.FlatMapFunction;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -19,14 +13,10 @@ import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
-import scala.collection.immutable.Seq;
 import sparkSQL.SQLQuery1;
-import spark_v2.Query1_v2;
+import spark.Query1;
 
-import javax.xml.crypto.Data;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +59,7 @@ public class MainQuery1 {
 
         JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country,values).cache();
 
-        JavaPairRDD<Integer, String> result = Query1_v2.executeQuery(data);
+        JavaPairRDD<Integer, String> result = Query1.executeQuery(data);
 
         Dataset<Row> resultsDS= convertToDataset(spark,result);
         //resultsDS.show(100);

@@ -1,26 +1,14 @@
-package spark_v2;
+package spark;
 
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.*;
-import org.bson.Document;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.json4s.jackson.Json;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
-
-public class Query1_v2 {
+public class Query1 {
 
 
     public static JavaPairRDD<Integer, String> executeQuery(JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values){

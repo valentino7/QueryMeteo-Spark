@@ -1,29 +1,16 @@
-package spark_v2;
+package spark;
 
 
-import Utils.Constants;
-import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
 import scala.*;
 
-import java.lang.Boolean;
 import java.lang.Double;
-import java.util.ArrayList;
-import java.util.List;
 
 
-public class Query2_v2 {
+public class Query2 {
 
 
 

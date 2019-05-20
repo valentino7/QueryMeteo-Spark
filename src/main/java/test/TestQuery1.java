@@ -2,7 +2,6 @@ package test;
 
 import Utils.*;
 import com.google.common.base.Stopwatch;
-import main.MainQuery1;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
@@ -11,11 +10,9 @@ import org.apache.spark.sql.SparkSession;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
-import spark_v2.Query1_v2;
-import sun.applet.Main;
+import spark.Query1;
 
 import java.io.*;
-import java.net.ContentHandler;
 import java.util.Map;
 
 public class TestQuery1 {
@@ -56,7 +53,7 @@ public class TestQuery1 {
                     writer.println("Preprocessing " + "\t"+j +watchPre.toString());
 
                     Stopwatch watchExe = Stopwatch.createStarted();
-                    Query1_v2.executeQuery(data);
+                    Query1.executeQuery(data);
                     watchExe.stop();
                     writer.println("Execution "+ "\t"+j +watchExe.toString());
 
