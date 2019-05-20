@@ -1,14 +1,10 @@
-package spark_v2;
+package spark;
 
-import Utils.Constants;
 import com.google.common.collect.Iterables;
-import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.api.java.function.VoidFunction;
 import scala.*;
 
 import java.lang.Boolean;
@@ -16,7 +12,7 @@ import java.lang.Double;
 import java.util.*;
 
 
-public class Query3_v2 {
+public class Query3 {
 
     public static JavaPairRDD<String, List<Tuple2<String,Integer> >>  executeQuery(JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values){
 

@@ -14,11 +14,10 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
-import scala.Tuple4;
 import scala.Tuple5;
 
 import sparkSQL.SQLQuery3;
-import spark_v2.Query3_v2;
+import spark.Query3;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -81,7 +80,7 @@ public class MainQuery3 {
         JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(country,valuesq3);
 
         //getTIme
-        JavaPairRDD<String, List<Tuple2<String,Integer> >> result = Query3_v2.executeQuery(preprocess);
+        JavaPairRDD<String, List<Tuple2<String,Integer> >> result = Query3.executeQuery(preprocess);
         //getTIme
 
         Dataset<Row> res = convertToDataset(spark,result);
