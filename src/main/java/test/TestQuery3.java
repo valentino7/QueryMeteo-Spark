@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-import static main.MainQuery3.convertToDataset;
+import static main.ControllerQuery3.convertToDataset;
 
 public class TestQuery3 {
 

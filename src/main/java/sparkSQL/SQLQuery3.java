@@ -24,7 +24,7 @@ import static org.apache.spark.sql.functions.*;
 public class SQLQuery3 {
 
 
-    public static void executeQuery(SparkSession spark, JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values) {
+    public static Dataset<Row> executeQuery(SparkSession spark, JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> values) {
 
 
         //creo lo schema
@@ -137,7 +137,7 @@ public class SQLQuery3 {
 
 
         //confronto tra rank delle città nel 2017 e nel 2016
-        Dataset<Row> compareRanks = spark.sql(
+        return spark.sql(
                 "SELECT r1.nation, r1.city, r2.year as currentYear, r2.rank as currentPosition, r1.year as lastYear, r1.rank as LastPosition " +
                         "FROM rank2016 as r1 JOIN rank2017 as r2 " +
                         "ON r1.nation == r2.nation AND r1.city == r2.city " +
@@ -146,7 +146,6 @@ public class SQLQuery3 {
 
         //compareRanks.show();
 
-        compareRanks.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY3_SQL);
 
     }
 }

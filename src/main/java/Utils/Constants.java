@@ -17,20 +17,20 @@ public class Constants {
     public static final int FILE_TYPE =0;
     public static final int NUM_OF_FILE =2;
 
-    public static final String HDFS_ROOT="hdfs://192.168.64.7:54310/";
-    public static final String HDFS_HBASE_QUERY1 =HDFS_ROOT+"results/hbase/query1";
-    public static final String HDFS_HBASE_QUERY2 =HDFS_ROOT+"results/hbase/query2/file";
-    public static final String HDFS_HBASE_QUERY3 =HDFS_ROOT+"results/hbase/query3";
+    //public static final String HDFS_ROOT="hdfs://192.168.64.7:54310/";
+    public static final String HDFS_HBASE_QUERY1 ="results/hbase/query1";
+    public static final String HDFS_HBASE_QUERY2 ="results/hbase/query2/file";
+    public static final String HDFS_HBASE_QUERY3 ="results/hbase/query3";
 
-    public static final String HDFS_MONGO_QUERY1 =HDFS_ROOT+"results/mongo/query1";
-    public static final String HDFS_MONGO_QUERY2 =HDFS_ROOT+"results/mongo/query2/file";
-    public static final String HDFS_MONGO_QUERY3 =HDFS_ROOT+"results/mongo/query3";
+    public static final String HDFS_MONGO_QUERY1 ="results/mongo/query1";
+    public static final String HDFS_MONGO_QUERY2 ="results/mongo/query2/file";
+    public static final String HDFS_MONGO_QUERY3 ="results/mongo/query3";
 
-    public static final String HDFS_MONGO_QUERY1_SQL =HDFS_ROOT+"results/mongoSQL/query1";
-    public static final String HDFS_MONGO_QUERY2_SQL =HDFS_ROOT+"results/mongoSQL/query2/file";
-    public static final String HDFS_MONGO_QUERY3_SQL =HDFS_ROOT+"results/mongoSQL/query3";
+    public static final String HDFS_MONGO_QUERY1_SQL ="results/mongoSQL/query1";
+    public static final String HDFS_MONGO_QUERY2_SQL ="results/mongoSQL/query2/file";
+    public static final String HDFS_MONGO_QUERY3_SQL ="results/mongoSQL/query3";
 
-    public static final String HDFS_INPUT =HDFS_ROOT+"input/";
+    public static final String HDFS_INPUT ="input/";
 
 
 }

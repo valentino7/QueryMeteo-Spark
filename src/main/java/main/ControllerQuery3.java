@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class MainQuery3 {
+public class ControllerQuery3 {
 
 
     public static Dataset<Row> convertToDataset(SparkSession spark, JavaPairRDD<String, List<Tuple2<String,Integer> >>  result){
@@ -55,28 +55,19 @@ public class MainQuery3 {
         return spark.sqlContext().createDataFrame(rows, schemata);
     }
 
-    public static void main(String[] args) {
+    public static void executeMain(String HDFS_ROOT){
 
-        SparkSession spark = SparkSession
-                .builder()
-                .appName("Java Spark SQL query1").master("local")
-                //.config("spark.some.config.option", "some-value")
-                .getOrCreate();
-
+        SparkSession spark = Context.getContext("query3");
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
-
         sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
 
-        Dataset<Row> inputData = spark.read().option("header","true").csv(Constants.HDFS_INPUT +Constants.TEMPERATURE_FILE_CSV);
-
+        Dataset<Row> inputData = spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.TEMPERATURE_FILE_CSV);
         //Nations
-        Dataset<Row> city_file = spark.read().option("header","true").csv("input/" +Constants.CITY_FILE_CSV);
+        Dataset<Row> city_file = spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT+Constants.CITY_FILE_CSV);
 
         //Nations
         Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
-
         JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(inputData,3);
-
         JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(country,valuesq3);
 
         //getTIme
@@ -84,12 +75,17 @@ public class MainQuery3 {
         //getTIme
 
         Dataset<Row> res = convertToDataset(spark,result);
+        res.coalesce(1).write().format("json").option("header", "true").save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY3);
 
-        res.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY3);
-
-        SQLQuery3.executeQuery(spark,preprocess);
-
+        Dataset<Row> resultSQL = SQLQuery3.executeQuery(spark,preprocess);
+        resultSQL.coalesce(1).write().format("json").option("header", "true").save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY3_SQL);
 
         spark.stop();
+    }
+
+    public static void main(String[] args) {
+        String HDFS_ROOT = "hdfs://"+ args[0]+"/";
+        ControllerQuery3.executeMain(HDFS_ROOT);
+
     }
 }

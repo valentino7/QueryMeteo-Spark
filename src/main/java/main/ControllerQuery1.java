@@ -23,7 +23,7 @@ import java.util.Map;
 import static org.apache.spark.sql.types.DataTypes.createArrayType;
 import static org.apache.spark.sql.types.DataTypes.createStructField;
 
-public class MainQuery1 {
+public class ControllerQuery1 {
 
 
     public static Dataset<Row> convertToDataset(SparkSession spark,JavaPairRDD<Integer, String> result){
@@ -39,7 +39,7 @@ public class MainQuery1 {
         return spark.sqlContext().createDataFrame(rows, schemata);
     }
 
-    public static void executeMain() {
+    public static void executeMain(String HDFS_ROOT) {
 
         //startTimer
         SparkSession spark = Context.getContext("query1");
@@ -49,8 +49,8 @@ public class MainQuery1 {
         inputData = spark.read().csv(Constants.HDFS_INPUT +Constants.WEATHER_FILE);
         */
 
-        Dataset<Row> inputData = spark.read().option("header","true").csv(Constants.HDFS_INPUT +Constants.WEATHER_FILE_CSV);
-        Dataset<Row> city_file = spark.read().option("header","true").csv(Constants.HDFS_INPUT +Constants.CITY_FILE_CSV);
+        Dataset<Row> inputData = spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.WEATHER_FILE_CSV);
+        Dataset<Row> city_file = spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.CITY_FILE_CSV);
 
         //Nations
         Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
@@ -65,10 +65,12 @@ public class MainQuery1 {
         //resultsDS.show(100);
         //resultsDS.write().format("parquet").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
         //resultsDS.write().format("csv").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
-        resultsDS.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY1);
+        resultsDS.coalesce(1).write().format("json").option("header", "true").save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY1);
 
 
-        SQLQuery1.executeQuery(spark,data);
+        Dataset<Row> resultSQL = SQLQuery1.executeQuery(spark,data);
+        resultSQL.coalesce(1).write().format("json").option("header", "true").save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY1_SQL);
+
 
 
         spark.stop();
@@ -77,7 +79,8 @@ public class MainQuery1 {
 
     public static void main(String[] args) {
 
-        MainQuery1.executeMain();
+        String HDFS_ROOT = "hdfs://"+ args[0]+"/";
+        ControllerQuery1.executeMain(HDFS_ROOT);
     }
 
 }

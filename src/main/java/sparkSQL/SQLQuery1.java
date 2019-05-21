@@ -20,7 +20,7 @@ import java.util.*;
 
 public class SQLQuery1 {
 
-    public static void executeQuery(SparkSession spark,JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values) {
+    public static Dataset<Row> executeQuery(SparkSession spark,JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> values) {
 
         //creo lo schema
         List<StructField> fields = new ArrayList<>();
@@ -75,7 +75,7 @@ public class SQLQuery1 {
 
 
         clearSkyDays.createOrReplaceTempView("finaleView");
-        Dataset<Row> result = spark.sql(
+        return spark.sql(
                     "SELECT year, cities " +
                            "FROM (SELECT year, COUNT(month) as countmonth, cities " +
                                 "FROM finaleView " +
@@ -84,8 +84,6 @@ public class SQLQuery1 {
                            "WHERE countmonth == 3 " +
                            "ORDER BY year");
 
-        //result.show();
-        result.coalesce(1).write().format("json").option("header", "true").save(Constants.HDFS_MONGO_QUERY1_SQL);
 
     }
 

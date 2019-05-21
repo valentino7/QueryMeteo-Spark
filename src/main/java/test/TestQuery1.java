@@ -2,7 +2,6 @@ package test;
 
 import Utils.*;
 import com.google.common.base.Stopwatch;
-import main.MainQuery1;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -14,16 +13,13 @@ import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
 import spark.Query1;
-import spark.Query1;
-import sun.applet.Main;
 
 import java.io.*;
-import java.net.ContentHandler;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import static main.MainQuery1.convertToDataset;
+import static main.ControllerQuery1.convertToDataset;
 
 public class TestQuery1 {
 

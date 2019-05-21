@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=pathToJarFile -DgroupId=org.geonames -DartifactId=geonames -Dversion=1.1 -Dpackaging=jar -DgeneratePom=true
