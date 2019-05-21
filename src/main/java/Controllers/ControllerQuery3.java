@@ -1,4 +1,4 @@
-package main;
+package Controllers;
 
 import Utils.*;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -17,7 +17,7 @@ import scala.Tuple3;
 import scala.Tuple5;
 
 import sparkSQL.SQLQuery3;
-import spark.Query3;
+import sparkCore.Query3;
 
 import java.util.ArrayList;
 import java.util.Iterator;

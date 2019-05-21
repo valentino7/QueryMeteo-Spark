@@ -16,8 +16,8 @@ public class Nations {
     public static Map<String, Tuple2<String,String>> getNation(SparkSession spark,Dataset<Row> inputData) {
 
        /*
-        inputData = spark.read().parquet(Constants.HDFS + Constants.CITY_FILE);
-        inputData = spark.read().csv(Constants.HDFS + Constants.CITY_FILE);
+        inputData = sparkCore.read().parquet(Constants.HDFS + Constants.CITY_FILE);
+        inputData = sparkCore.read().csv(Constants.HDFS + Constants.CITY_FILE);
        */
 
 

@@ -1,4 +1,4 @@
-package spark;
+package sparkCore;
 
 import com.google.common.collect.Iterables;
 import org.apache.spark.api.java.JavaPairRDD;

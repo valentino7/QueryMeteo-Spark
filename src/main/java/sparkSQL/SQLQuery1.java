@@ -1,8 +1,6 @@
 package sparkSQL;
 
 
-import Utils.Constants;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -11,7 +9,6 @@ import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import scala.Function1;
 import scala.Tuple2;
 import scala.Tuple4;
 import java.util.*;

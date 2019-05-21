@@ -12,7 +12,7 @@ import org.apache.spark.sql.SparkSession;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple5;
-import spark.Query3;
+import sparkCore.Query3;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-import static main.ControllerQuery3.convertToDataset;
+import static Controllers.ControllerQuery3.convertToDataset;
 
 public class TestQuery3 {
 
@@ -33,7 +33,7 @@ public class TestQuery3 {
 
         try {
 
-            SparkSession spark = Context.getContext("test query 3 spark core");
+            SparkSession spark = Context.getContext("test query 3 sparkCore core");
 
             writer = Files.newBufferedWriter(Paths.get("test/query3.csv"));
 

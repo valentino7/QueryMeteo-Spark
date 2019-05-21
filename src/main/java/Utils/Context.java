@@ -12,8 +12,9 @@ public class Context {
         //startTimer
         SparkSession spark = SparkSession
                 .builder()
-                .appName(name).master(Constants.MASTER)
-                //.config("spark.some.config.option", "some-value")
+                .appName(name)
+                //.master(Constants.MASTER)
+                //.config("sparkCore.some.config.option", "some-value")
                 .getOrCreate();
 
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());

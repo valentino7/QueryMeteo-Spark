@@ -12,14 +12,14 @@ import org.apache.spark.sql.SparkSession;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
-import spark.Query1;
+import sparkCore.Query1;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import static main.ControllerQuery1.convertToDataset;
+import static Controllers.ControllerQuery1.convertToDataset;
 
 public class TestQuery1 {
 
@@ -40,7 +40,7 @@ public class TestQuery1 {
 
             for (int j = 0; j < 1; j++) {
 
-                SparkSession spark = Context.getContext("test query 1 spark core");
+                SparkSession spark = Context.getContext("test query 1 sparkCore core");
 
 
                 Stopwatch watchLoadFile = Stopwatch.createStarted();

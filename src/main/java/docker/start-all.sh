@@ -11,9 +11,9 @@ python activate_processor_nifi.py 1 $NIFI_HOST
 ./hbase/start-hbase.sh
 
 HOST_HBASE=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' hbase)
-PORT=16301
+PORT_HBASE=16301
 echo "$HOST_HBASE"
-until $(curl --output /dev/null --silent --head --fail http://$HOST_HBASE:$PORT); do
+until $(curl --output /dev/null --silent --head --fail http://$HOST_HBASE:$PORT_HBASE); do
     printf '.'
     sleep 5s # Or 10s or 1m or whatever time
 done
@@ -25,11 +25,27 @@ docker cp ./hbase/hbase-site.xml hbase:/hbase/conf/hbase-site.xml
 
 #SPARK
 HOST_HDFS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' master)
+HDFS_PORT=54310
 cd ./spark
 docker-compose up -d
-#docker exec spark_master /bin/bash -c '$SPARK_HOME/bin/spark-submit --class ControllerQuery2 --master "local" target/handson-spark-1.0.jar'
 
-sleep 10
-python activate_processor_nifi.py 2 $NIFI_HOST
+SPARK_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' spark_master)
+SPARK_PORT=8080
+until $(curl --output /dev/null --silent --head --fail http://$SPARK_HOST:$SPARK_PORT); do
+    printf '.'
+    sleep 5s # Or 10s or 1m or whatever time
+done
+
+cd ..
+
+docker cp ./spark-1.0.jar spark_master:/usr/spark-2.4.2
+docker cp ./spark-1.0.jar spark_worker:/usr/spark-2.4.2
+
+
+SPARK_HOME/bin/spark-submit --class MainSpark 172.18.0.5:54310 spark-1.0.jar
+docker exec spark_master /bin/bash -c '$SPARK_HOME/bin/spark-submit --class MainSpark spark-1.0.jar'+$HOST_HDFS:$HDFS_PORT
+
+#sleep 10
+#python activate_processor_nifi.py 2 $NIFI_HOST
 
 

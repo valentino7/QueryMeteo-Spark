@@ -1,4 +1,4 @@
-package main;
+package Controllers;
 
 import Utils.*;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -14,14 +14,12 @@ import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
 import sparkSQL.SQLQuery1;
-import spark.Query1;
+import sparkCore.Query1;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.spark.sql.types.DataTypes.createArrayType;
-import static org.apache.spark.sql.types.DataTypes.createStructField;
 
 public class ControllerQuery1 {
 
@@ -45,8 +43,8 @@ public class ControllerQuery1 {
         SparkSession spark = Context.getContext("query1");
 
         /*
-        inputData = spark.read().parquet(Constants.HDFS_INPUT +Constants.WEATHER_FILE);
-        inputData = spark.read().csv(Constants.HDFS_INPUT +Constants.WEATHER_FILE);
+        inputData = sparkCore.read().parquet(Constants.HDFS_INPUT +Constants.WEATHER_FILE);
+        inputData = sparkCore.read().csv(Constants.HDFS_INPUT +Constants.WEATHER_FILE);
         */
 
         Dataset<Row> inputData = spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.WEATHER_FILE_CSV);

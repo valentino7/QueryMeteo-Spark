@@ -1,6 +1,6 @@
 package sparkSQL;
 
-import Utils.Constants;
+
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -13,7 +13,7 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
-import scala.Tuple4;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class SQLQuery2 {
     public static Dataset<Row> executeQuery(SparkSession spark,JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > values) {
 
 
-        //Dataset df = spark.read().format("csv").option("header", "true").load(inputPath2);
+        //Dataset df = sparkCore.read().format("csv").option("header", "true").load(inputPath2);
 
         //creo lo schema
         List<StructField> fields = new ArrayList<>();

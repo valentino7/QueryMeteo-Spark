@@ -1,4 +1,4 @@
-package spark;
+package sparkCore;
 
 
 import org.apache.spark.api.java.JavaPairRDD;

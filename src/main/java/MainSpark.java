@@ -1,4 +1,6 @@
-package main;
+import Controllers.ControllerQuery1;
+import Controllers.ControllerQuery2;
+import Controllers.ControllerQuery3;
 
 public class MainSpark {
 
@@ -6,7 +8,7 @@ public class MainSpark {
     public static void main(String[] args) {
 
         if (args.length < 1 ){
-            System.err.println("Usage: main.MainSpark <HDFS_MasterIP:PORT>");
+            System.err.println("Usage: MainSpark <HDFS_MasterIP:PORT>");
             System.exit(1);
         }
 

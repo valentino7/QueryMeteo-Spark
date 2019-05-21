@@ -1,4 +1,4 @@
-package main;
+package Controllers;
 
 import Utils.*;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -14,7 +14,7 @@ import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.Tuple4;
-import spark.Query2;
+import sparkCore.Query2;
 import sparkSQL.SQLQuery2;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class ControllerQuery2 {
 
         for (int i =0; i < Constants.STATISTICS_FILE; i++) {
 
-            Dataset<Row> inputData =  spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT+Constants.HDFS_INPUT +Constants.FILE[i]);
+            Dataset<Row> inputData =  spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.FILE[i]);
 
             JavaRDD<Tuple3<String, String, Double>> values = AllQueryPreProcess.executePreProcess(inputData,  2);
 

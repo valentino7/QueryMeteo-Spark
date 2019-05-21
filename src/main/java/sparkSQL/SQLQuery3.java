@@ -1,6 +1,6 @@
 package sparkSQL;
 
-import Utils.Constants;
+
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -12,14 +12,10 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
-import scala.Tuple4;
 import scala.Tuple5;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.spark.sql.functions.*;
 
 public class SQLQuery3 {
 
