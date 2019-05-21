@@ -4,6 +4,8 @@
 
 #NIFI
 ./apache-nifi/nifi-run.sh
+NIFI_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nifi)
+python activate_processor_nifi.py 1 $NIFI_HOST
 
 #HBASE
 ./hbase/start-hbase.sh
@@ -26,4 +28,8 @@ HOST_HDFS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}
 cd ./spark
 docker-compose up -d
 #docker exec spark_master /bin/bash -c '$SPARK_HOME/bin/spark-submit --class MainQuery2 --master "local" target/handson-spark-1.0.jar'
+
+sleep 10
+python activate_processor_nifi.py 2 $NIFI_HOST
+
 

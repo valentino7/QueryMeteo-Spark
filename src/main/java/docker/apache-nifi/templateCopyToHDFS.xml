@@ -518,7 +518,7 @@
     </entry>
     <entry>
         <key>Directory</key>
-        <value>/input/parquet</value>
+        <value>/input</value>
     </entry>
     <entry>
         <key>compression-type</key>
@@ -1289,7 +1289,7 @@
                     <variables/>
                 </processGroups>
             </contents>
-            <name>PutcsvToHDFS in Parquet</name>
+            <name>PutcsvToHDFSinParquet</name>
             <variables/>
         </processGroups>
     </snippet>

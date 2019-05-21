@@ -6304,7 +6304,7 @@
                     <type>org.apache.nifi.processors.hadoop.FetchHDFS</type>
                 </processors>
             </contents>
-            <name>Copy of hdfsToMongo&amp;toHBase</name>
+            <name>exportHDFSToDbs</name>
             <variables/>
         </processGroups>
     </snippet>
