@@ -38,12 +38,15 @@ done
 
 cd ..
 
-docker cp ./spark-1.0.jar spark_master:/usr/spark-2.4.2
-docker cp ./spark-1.0.jar spark_worker:/usr/spark-2.4.2
+#docker cp ./spark-1.0.jar spark_master:/usr/spark-2.4.2
+#docker cp ./spark-1.0.jar spark_worker:/usr/spark-2.4.2
 
 
-SPARK_HOME/bin/spark-submit --class MainSpark 172.18.0.5:54310 spark-1.0.jar
-docker exec spark_master /bin/bash -c '$SPARK_HOME/bin/spark-submit --class MainSpark spark-1.0.jar'+$HOST_HDFS:$HDFS_PORT
+#docker exec spark_master /bin/bash -c "bin/spark-submit --class MainSpark spark-1.0.jar $HOST_HDFS:$HDFS_PORT"
+
+#docker exec spark_master /bin/bash -c "bin/spark-submit --status app-20190521162626-0006"
+
+
 
 #sleep 10
 #python activate_processor_nifi.py 2 $NIFI_HOST

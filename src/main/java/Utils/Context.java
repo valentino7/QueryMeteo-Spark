@@ -13,7 +13,7 @@ public class Context {
         SparkSession spark = SparkSession
                 .builder()
                 .appName(name)
-                //.master(Constants.MASTER)
+                .master(Constants.MASTER)
                 //.config("sparkCore.some.config.option", "some-value")
                 .getOrCreate();
 

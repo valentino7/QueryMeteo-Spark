@@ -1,1 +1,1 @@
-mvn install:install-file -Dfile=pathToJarFile -DgroupId=org.geonames -DartifactId=geonames -Dversion=1.1 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=/home/anthony/IdeaProjects/spark_project/library/geonames-1.1.14.jar -DgroupId=org.geonames -DartifactId=geonames -Dversion=1.1 -Dpackaging=jar -DgeneratePom=true
