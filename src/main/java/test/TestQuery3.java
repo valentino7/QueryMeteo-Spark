@@ -27,12 +27,13 @@ public class TestQuery3 {
 
     public static void main(String[] args) {
 
-        SparkSession spark = Context.getContext("test query 3 spark core");
-
+        ;
         BufferedWriter writer = null;
         CSVPrinter csvPrinter = null;
 
         try {
+
+            SparkSession spark = Context.getContext("test query 3 spark core");
 
             writer = Files.newBufferedWriter(Paths.get("test/query3.csv"));
 
@@ -40,33 +41,34 @@ public class TestQuery3 {
 
             for (int j = 0; j < 1; j++) {
 
-                for (int i = 0; i < 10; i++) {
+                Stopwatch watchLoadFile = Stopwatch.createStarted();
+                Dataset<Row> inputData = null;
+                Map<String, Tuple2<String, String>> country = null;
+                Dataset<Row> city_data = null;
+                switch (j) {
+                    case 0:
+                        inputData = spark.read().option("header", "true").csv("input/" + Constants.TEMPERATURE_FILE_CSV);
+                        city_data = spark.read().option("header", "true").csv("input/" + Constants.CITY_FILE_CSV);
+                        break;
 
-                    Stopwatch watchLoadFile = Stopwatch.createStarted();
-                    Dataset<Row> inputData = null;
-                    Map<String, Tuple2<String, String>> country = null;
-                    Dataset<Row> city_data = null;
-                    switch (j) {
-                        case 0:
-                            inputData = spark.read().option("header", "true").csv("input/" + Constants.TEMPERATURE_FILE_CSV);
-                            city_data = spark.read().option("header", "true").csv("input/" + Constants.CITY_FILE_CSV);
-                            break;
+                    case 1:
+                        inputData = spark.read().option("header", "true").parquet(Constants.HDFS_INPUT + Constants.TEMPERATURE_FILE_PARQUET);
+                        city_data = spark.read().option("header", "true").parquet(Constants.HDFS_INPUT + Constants.CITY_FILE_PARQUET);
+                        break;
+                }
 
-                        case 1:
-                            inputData = spark.read().option("header", "true").parquet(Constants.HDFS_INPUT + Constants.TEMPERATURE_FILE_PARQUET);
-                            city_data = spark.read().option("header", "true").parquet(Constants.HDFS_INPUT + Constants.CITY_FILE_PARQUET);
-                            break;
-                    }
-
-                    String tmpLoadTime = watchLoadFile.stop().toString();
-                    tmpLoadTime = tmpLoadTime.replace(",", ".");
-                    tmpLoadTime = tmpLoadTime.replace(",", ".");
+                String tmpLoadTime = watchLoadFile.stop().toString();
+                tmpLoadTime = tmpLoadTime.replace(",", ".");
+                tmpLoadTime = tmpLoadTime.replace(",", ".");
 
 
-                    Stopwatch watchRest = Stopwatch.createStarted();
-                    country = Nations.getNation(spark, city_data);
-                    String tmpRestTime = watchRest.stop().toString();
-                    tmpRestTime = tmpRestTime.replace(",", ".");
+                Stopwatch watchRest = Stopwatch.createStarted();
+                country = Nations.getNation(spark, city_data);
+                String tmpRestTime = watchRest.stop().toString();
+                tmpRestTime = tmpRestTime.replace(",", ".");
+
+
+                for (int i = 0; i < 50; i++) {
 
 
                     Stopwatch watchPre = Stopwatch.createStarted();
@@ -94,6 +96,8 @@ public class TestQuery3 {
                     csvPrinter.printRecord(tmpLoadTime, tmpRestTime, tmpTime, tmpTime2, tmpWrite);
                     csvPrinter.flush();
                 }
+
+                spark.stop();
             }
         } catch (IOException e) {
             e.printStackTrace();

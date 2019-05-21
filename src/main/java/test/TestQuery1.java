@@ -29,7 +29,7 @@ public class TestQuery1 {
 
     public static void main(String[] args) {
 
-        SparkSession spark = Context.getContext("test query 1 spark core");
+
 
         BufferedWriter writer = null;
         CSVPrinter csvPrinter = null;
@@ -39,39 +39,44 @@ public class TestQuery1 {
 
             csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("FileLoadingTime", "RestApiTime","PreProcessTime", "ExecutionTime", "WriteTime"));
 
+            Map<String, Tuple2<String, String>> country = null;
+            Dataset<Row> city_data = null;
+
             for (int j = 0; j < 1; j++) {
 
-                for (int i = 0; i < 10; i++) {
-                    Stopwatch watchLoadFile = Stopwatch.createStarted();
-                    Dataset<Row> inputData = null;
-                    Map<String, Tuple2<String, String>> country = null;
-                    Dataset<Row> city_data = null;
-                    switch (j) {
-                        case 0:
-                            inputData = spark.read().option("header", "true").csv("input/" + Constants.WEATHER_FILE_CSV);
-                            city_data = spark.read().option("header","true").csv("input/" + Constants.CITY_FILE_CSV);
-                            break;
-
-                        case 1:
-                            inputData = spark.read().option("header", "true").parquet(Constants.HDFS_INPUT  + Constants.WEATHER_FILE_PARQUET);
-                            city_data = spark.read().option("header","true").parquet(Constants.HDFS_INPUT + Constants.CITY_FILE_PARQUET);
-                            break;
-                    }
-
-                    String tmpLoadTime = watchLoadFile.stop().toString();
-                    tmpLoadTime = tmpLoadTime.replace(",", ".");
-                    tmpLoadTime = tmpLoadTime.replace(",", ".");
+                SparkSession spark = Context.getContext("test query 1 spark core");
 
 
-                    Stopwatch watchRest = Stopwatch.createStarted();
-                    country = Nations.getNation(spark ,city_data);
-                    String tmpRestTime = watchRest.stop().toString();
-                    tmpRestTime = tmpRestTime.replace(",", ".");
+                Stopwatch watchLoadFile = Stopwatch.createStarted();
+                Dataset<Row> inputData = null;
+                switch (j) {
+                    case 0:
+                        inputData = spark.read().option("header", "true").csv("input/" + Constants.WEATHER_FILE_CSV);
+                        city_data = spark.read().option("header","true").csv("input/" + Constants.CITY_FILE_CSV);
+                        break;
+
+                    case 1:
+                        inputData = spark.read().option("header", "true").parquet(Constants.HDFS_INPUT  + Constants.WEATHER_FILE_PARQUET);
+                        city_data = spark.read().option("header","true").parquet(Constants.HDFS_INPUT + Constants.CITY_FILE_PARQUET);
+                        break;
+                }
+
+                String tmpLoadTime = watchLoadFile.stop().toString();
+                tmpLoadTime = tmpLoadTime.replace(",", ".");
+                tmpLoadTime = tmpLoadTime.replace(",", ".");
+
+
+                Stopwatch watchRest = Stopwatch.createStarted();
+                country = Nations.getNation(spark ,city_data);
+                String tmpRestTime = watchRest.stop().toString();
+                tmpRestTime = tmpRestTime.replace(",", ".");
+
+                for (int i = 0; i < 50; i++) {
 
 
                     Stopwatch watchPre = Stopwatch.createStarted();
-                    JavaRDD<Tuple3<String, String, Double>> values = AllQueryPreProcess.executePreProcess(inputData, 1).cache();
-                    JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country, values).cache();
+                    JavaRDD<Tuple3<String, String, Double>> values = AllQueryPreProcess.executePreProcess(inputData, 1);
+                    JavaPairRDD<Tuple4<Integer, Integer, Integer, String>, Double> data = Query1Preprocess.executeProcess(country, values);
                     String tmpTime = watchPre.stop().toString();
                     tmpTime = tmpTime.replace(",", ".");
 
@@ -86,7 +91,7 @@ public class TestQuery1 {
                     Dataset<Row> resultsDS= convertToDataset(spark,result);
                     //resultsDS.write().format("parquet").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
                     //resultsDS.write().format("csv").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
-                    resultsDS.coalesce(1).write().format("json").option("header", "true").save("result/file" + i);
+                    resultsDS.coalesce(1).write().format("json").option("header", "true").save("results/file" + i);
                     String tmpWrite = watchWrite.stop().toString();
                     tmpWrite = tmpWrite.replace(",", ".");
 
@@ -94,6 +99,8 @@ public class TestQuery1 {
                     csvPrinter.printRecord(tmpLoadTime, tmpRestTime, tmpTime, tmpTime2, tmpWrite);
                     csvPrinter.flush();
                 }
+
+                spark.stop();
             }
         } catch (IOException e) {
             e.printStackTrace();
