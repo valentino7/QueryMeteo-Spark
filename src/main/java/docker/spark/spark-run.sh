@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
  cd spark/
 
 HOST_HDFS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' master)

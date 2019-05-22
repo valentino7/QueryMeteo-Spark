@@ -18,7 +18,7 @@ public class MainSpark {
         System.out.println(HDFS_ROOT);
 
         ControllerQuery1.executeMain(HDFS_ROOT);
-        //ControllerQuery2.executeMain(HDFS_ROOT);
-       // ControllerQuery3.executeMain(HDFS_ROOT);
+        ControllerQuery2.executeMain(HDFS_ROOT);
+        ControllerQuery3.executeMain(HDFS_ROOT);
     }
 }

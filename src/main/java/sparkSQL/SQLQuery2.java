@@ -19,9 +19,6 @@ import scala.Tuple3;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.stddev_pop;
-
 public class SQLQuery2 {
 
     public static Dataset<Row> executeQuery(SparkSession spark,JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > values) {

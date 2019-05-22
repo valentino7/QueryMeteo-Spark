@@ -47,27 +47,27 @@ public class SQLQuery1 {
         df.createOrReplaceTempView("clearSky");
         //conteggio del cielo sereno per ogni città, per ogni giorno, per ogni mese
         Dataset<Row> clearSky = spark.sql(
-                "SELECT year, month, day, cities, SUM(weather) AS sum " +
+                "SELECT year, month, day, city, SUM(weather) AS sum " +
                         "FROM clearSky  " +
-                        "GROUP BY year, month, day, cities");
+                        "GROUP BY year, month, day, city");
 
 
         clearSky.createOrReplaceTempView("tmp");
 
         //filter delle città con più di 18 ore di cielo sereno
         Dataset<Row> tmpResult = spark.sql(
-                "SELECT year, month, day, cities, sum " +
+                "SELECT year, month, day, city, sum " +
                         "FROM tmp WHERE sum >= 18 " +
-                        "GROUP BY year, month, day, cities, sum");
+                        "GROUP BY year, month, day, city, sum");
 
 
         tmpResult.createOrReplaceTempView("tmp2");
         //città con almeno 15 giorni al mese di cielo sereno
         Dataset<Row> clearSkyDays = spark.sql(
-                 "SELECT year, month , cities, numdays " +
-                        "FROM (SELECT year, month, cities, COUNT(day) as numdays " +
+                 "SELECT year, month , city, numdays " +
+                        "FROM (SELECT year, month, city, COUNT(day) as numdays " +
                                 "FROM tmp2 " +
-                                "GROUP BY year, month, cities) " +
+                                "GROUP BY year, month, city) " +
                         "WHERE numdays >= 15 " +
                         "ORDER BY year");
 
@@ -75,10 +75,10 @@ public class SQLQuery1 {
 
         clearSkyDays.createOrReplaceTempView("finaleView");
         return spark.sql(
-                    "SELECT year, cities " +
-                           "FROM (SELECT year, COUNT(month) as countmonth, cities " +
+                    "SELECT year, city " +
+                           "FROM (SELECT year, COUNT(month) as countmonth, city " +
                                 "FROM finaleView " +
-                                "GROUP BY year, cities " +
+                                "GROUP BY year, city " +
                                 "ORDER BY year) " +
                            "WHERE countmonth == 3 " +
                            "ORDER BY year");
