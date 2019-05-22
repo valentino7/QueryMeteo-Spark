@@ -1,6 +1,7 @@
 package sparkSQL;
 
 
+import Utils.Constants;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -25,12 +26,12 @@ public class SQLQuery3 {
 
         //creo lo schema
         List<StructField> fields = new ArrayList<>();
-        fields.add(DataTypes.createStructField("year", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("month", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("hour", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("nation", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("city", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("temperature", DataTypes.DoubleType, true));
+        fields.add(DataTypes.createStructField(Constants.YEAR_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.MONTH_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.HOUR_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.COUNTRY_LABEL, DataTypes.StringType, true));
+        fields.add(DataTypes.createStructField(Constants.CITY_LABEL, DataTypes.StringType, true));
+        fields.add(DataTypes.createStructField(Constants.TEMPERATURE_LABEL, DataTypes.DoubleType, true));
         //fields.add(DataTypes.createStructField("count", DataTypes.DoubleType, true));
 
         StructType schema = DataTypes.createStructType(fields);
@@ -65,10 +66,10 @@ public class SQLQuery3 {
 
         //calcolo della media delle temperature per il primo quadrimestre
         Dataset<Row> avgTable1 = spark.sql("" +
-                "SELECT year, nation, city, AVG(temperature) as avg_temp1 " +
+                "SELECT year, country, city, AVG(temperature) as avg_temp1 " +
                 "FROM avgTemp1 " +
                 "WHERE month >= 1 AND month <= 4 " +
-                "GROUP BY year, nation, city");
+                "GROUP BY year, country, city");
 
 
 
@@ -76,10 +77,10 @@ public class SQLQuery3 {
 
         //calcolo della media delle temperature per il secondo quadrimestre
         Dataset<Row> avgTable2 =spark.sql("" +
-                "SELECT year, nation, city, AVG(temperature) as avg_temp2 " +
+                "SELECT year, country, city, AVG(temperature) as avg_temp2 " +
                 "FROM avgTemp2 " +
                 "WHERE month >= 6 AND month <= 9 " +
-                "GROUP BY year, nation, city");
+                "GROUP BY year, country, city");
 
         //avgTable2.show(50);
 
@@ -93,12 +94,12 @@ public class SQLQuery3 {
             per ogni nazione-città
          */
         Dataset<Row> joinTable = spark.sql("" +
-                "SELECT year, nation, city, sub_temp " +
-                "FROM (SELECT t1.year, t1.nation, t1.city, ABS(t1.avg_temp1 - t2.avg_temp2) as sub_temp " +
+                "SELECT year, country, city, sub_temp " +
+                "FROM (SELECT t1.year, t1.country, t1.city, ABS(t1.avg_temp1 - t2.avg_temp2) as sub_temp " +
                         "FROM temp1 as t1 JOIN temp2 as t2 " +
                         "ON t1.year = t2.year AND t1.city = t2.city " +
-                        "GROUP BY t1.year, t1.nation, t1.city, sub_temp) " +
-                "GROUP BY year, nation, city, sub_temp " +
+                        "GROUP BY t1.year, t1.country, t1.city, sub_temp) " +
+                "GROUP BY year, country, city, sub_temp " +
                 "ORDER BY sub_temp DESC");
 
 
@@ -106,22 +107,22 @@ public class SQLQuery3 {
 
         //classifica delle città per nazione nel 2016
         Dataset<Row> rank2016 = spark.sql(
-                "SELECT year, nation, city, sub_temp, " +
-                "DENSE_RANK() OVER (PARTITION BY nation ORDER BY sub_temp DESC) as rank " +
+                "SELECT year, country, city, sub_temp, " +
+                "DENSE_RANK() OVER (PARTITION BY country ORDER BY sub_temp DESC) as rank " +
                 "FROM filter " +
                 "WHERE (year == 2016) " +
-                "GROUP BY year, nation, city, sub_temp");
+                "GROUP BY year, country, city, sub_temp");
 
 
         //top 3 città per ogni nazione nel 2017
         Dataset<Row> topThree2017 = spark.sql(
-        "SELECT year, nation, city, sub_temp, rank " +
+        "SELECT year, country, city, sub_temp, rank " +
                "FROM (SELECT *, " +
-                        "DENSE_RANK() OVER (PARTITION BY nation ORDER BY sub_temp DESC) as rank " +
+                        "DENSE_RANK() OVER (PARTITION BY country ORDER BY sub_temp DESC) as rank " +
                         "FROM filter " +
                         "WHERE year == 2017) " +
                "WHERE rank BETWEEN 1 AND 3 " +
-               "GROUP BY year, nation, city, sub_temp, rank");
+               "GROUP BY year, country, city, sub_temp, rank");
 
 
         //rank2016.show(50);
@@ -134,11 +135,11 @@ public class SQLQuery3 {
 
         //confronto tra rank delle città nel 2017 e nel 2016
         return spark.sql(
-                "SELECT r1.nation, r1.city, r2.year as currentYear, r2.rank as currentPosition, r1.year as lastYear, r1.rank as LastPosition " +
+                "SELECT r1.country, r1.city, r2.year as currentYear, r2.rank as currentPosition, r1.year as lastYear, r1.rank as LastPosition " +
                         "FROM rank2016 as r1 JOIN rank2017 as r2 " +
-                        "ON r1.nation == r2.nation AND r1.city == r2.city " +
-                        "GROUP BY r1.year, r2.year, r1.nation, r2.nation, r1.city, r2.city, r1.rank, r2.rank, r1.sub_temp, r2.sub_temp " +
-                        "ORDER BY r1.nation, r2.rank");
+                        "ON r1.country == r2.country AND r1.city == r2.city " +
+                        "GROUP BY r1.year, r2.year, r1.country, r2.country, r1.city, r2.city, r1.rank, r2.rank, r1.sub_temp, r2.sub_temp " +
+                        "ORDER BY r1.country, r2.rank");
 
         //compareRanks.show();
 

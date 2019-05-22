@@ -1,12 +1,11 @@
 package Utils;
 
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 
 public class Context {
 
-    public static SparkSession getContext(String name){
+    public static SparkSession getSession(String name){
 
         // SparkContext creation
         //startTimer
@@ -18,7 +17,7 @@ public class Context {
                 .getOrCreate();
 
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
-        sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
+        sc.hadoopConfiguration().set(Constants.SPAK_SUCCESS_CONF,Constants.SPAK_SUCCESS_BOOL);
 
         return spark;
     }

@@ -13,7 +13,7 @@ import java.util.Map;
 public class Nations {
 
     // (città) -> (ISO,Timezone)
-    public static Map<String, Tuple2<String,String>> getNation(SparkSession spark,Dataset<Row> inputData) {
+    public static Map<String, Tuple2<String,String>> getNation(Dataset<Row> inputData) {
 
        /*
         inputData = sparkCore.read().parquet(Constants.HDFS + Constants.CITY_FILE);
@@ -36,8 +36,7 @@ public class Nations {
         String lat = row.getString(1);
         String lon = row.getString(2);
 
-        WebService.setUserName("anthony2801");
-        //WebService.setConnectTimeOut(100000000);
+        WebService.setUserName(Constants.GEONAMES_USERNAME);
         Timezone time = null;
         try {
             time = WebService.timezone(Double.parseDouble(lat),Double.parseDouble(lon));
@@ -46,9 +45,6 @@ public class Nations {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // System.out.println("------------------------------------------------------");
-
 
         assert time != null;
         return new Tuple2<>(city,new Tuple2<>(time.getCountryCode(),time.getTimezoneId()) );

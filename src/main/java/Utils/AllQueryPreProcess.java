@@ -16,30 +16,42 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class AllQueryPreProcess {
+
     public static JavaRDD<Tuple3<String,String,Double>> executePreProcess(Dataset<Row> inputData ,int queryNumber) {
 
+
+        /*
+
+        take header from dataset ( list of city )
+
+         */
         List<String> citiesArray= new ArrayList<>(Arrays.asList(inputData.columns()));
         citiesArray.remove(0);
 
 
+        /*
+
+        .flatMap:
+
+
+         */
+
         return inputData
                 .toJavaRDD()
-                .flatMap(new FlatMapFunction<Row, Tuple3<String,String,Double>>() {
-                    @Override
-                    public Iterator<Tuple3<String, String, Double>> call(Row s) throws Exception {
-                        List<Tuple3<String, String, Double>> list = new ArrayList<>();
-                        for (int i = 1; i < s.size(); i++) {
-                            String city = citiesArray.get(i - 1).replaceAll("_"," ");
-                            if ( queryNumber == 1 ) {
-                                list.add(new Tuple3<>(s.getString(0), city, ( s.isNullAt(i) ||  !s.getString(i).equals("sky is clear") ) ? 0.0 : 1.0));
-                            }else {
-                                list.add(new Tuple3<>( s.getString(0) , city , ( s.isNullAt(i) || s.getString(i).isEmpty() ) ?    0.0 : Double.parseDouble(s.getString(i)) ) );
-                            }
+                .flatMap((FlatMapFunction<Row, Tuple3<String, String, Double>>) s -> {
+                    List<Tuple3<String, String, Double>> list = new ArrayList<>();
+                    for (int i = 1; i < s.size(); i++) {
+                        String city = citiesArray.get(i - 1).replaceAll("_"," ");
+                        if ( queryNumber == 1 ) {
+                            list.add(new Tuple3<>(s.getString(0), city, ( s.isNullAt(i) ||  !s.getString(i).equals(Constants.WEATHER) ) ? 0.0 : 1.0));
+                        }else {
+                            list.add(new Tuple3<>( s.getString(0) , city , ( s.isNullAt(i) || s.getString(i).isEmpty() ) ?    0.0 : Double.parseDouble(s.getString(i)) ) );
                         }
-
-                        return list.iterator();
                     }
-                });
+
+                    return list.iterator();
+                })
+                .cache();
 
     }
 

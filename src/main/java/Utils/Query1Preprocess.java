@@ -28,34 +28,22 @@ public class Query1Preprocess {
                             0 : other
 
         .filter :
-             RDD<(year,month,day,city), value > on Month: March.April,May
-
+             RDD<(year,month,day,city), value -> on Month: March.April,May
 */
         return values
-                .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple4<Integer,Integer,Integer,String>, Double>() {
-                    @Override
-                    public Tuple2<Tuple4<Integer, Integer, Integer, String>, Double> call(Tuple3<String, String, Double> tuple) throws Exception {
-                        // read date time in custom format
-                        String datePattern = "yyyy-MM-dd HH:mm:ss";
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
-                        LocalDateTime date = LocalDateTime.parse(tuple._1(), formatter);
+                .mapToPair((PairFunction<Tuple3<String, String, Double>, Tuple4<Integer, Integer, Integer, String>, Double>) tuple -> {
+                    // read date time in custom format
 
 
-                        // transform local date time in UTC format
-                        ZoneId utcZone = ZoneOffset.UTC;
-                        ZonedDateTime utcTime = ZonedDateTime.of(date,utcZone);
+                    ZonedDateTime dateTime = ConvertTime.convertTime(tuple._1(),nations.get(tuple._2())._2());
 
-                        // convert UTC datetime in ZoneID datetime
-
-                        ZonedDateTime dateTime = utcTime.withZoneSameInstant(ZoneId.of(nations.get(tuple._2())._2()));
-
-                        return new Tuple2<>(new Tuple4<>(dateTime.getYear(),dateTime.getMonth().getValue(),dateTime.getDayOfMonth(),tuple._2()),tuple._3());
-                    }
+                    return new Tuple2<>(new Tuple4<>(dateTime.getYear(),dateTime.getMonth().getValue(),dateTime.getDayOfMonth(),tuple._2()),tuple._3());
                 })
                 .filter( object -> (
                         object._1()._2() == 2 ||
                                 object._1()._2() == 3 ||
-                                object._1()._2() == 4 ) );
+                                object._1()._2() == 4 ) )
+                .cache();
     }
 
 }

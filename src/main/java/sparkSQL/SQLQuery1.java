@@ -1,6 +1,7 @@
 package sparkSQL;
 
 
+import Utils.Constants;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -21,11 +22,11 @@ public class SQLQuery1 {
 
         //creo lo schema
         List<StructField> fields = new ArrayList<>();
-        fields.add(DataTypes.createStructField("year", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("month", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("day", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("cities", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("weather", DataTypes.DoubleType, true));
+        fields.add(DataTypes.createStructField(Constants.YEAR_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.MONTH_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.DAY_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.CITY_LABEL, DataTypes.StringType, true));
+        fields.add(DataTypes.createStructField(Constants.WEATHER_LABEL, DataTypes.DoubleType, true));
 
         StructType schema = DataTypes.createStructType(fields);
 
@@ -49,15 +50,16 @@ public class SQLQuery1 {
                 "SELECT year, month, day, cities, SUM(weather) AS sum " +
                         "FROM clearSky  " +
                         "GROUP BY year, month, day, cities");
-        //clearSky.sort("year", "month", "day").show();
+
 
         clearSky.createOrReplaceTempView("tmp");
+
         //filter delle città con più di 18 ore di cielo sereno
         Dataset<Row> tmpResult = spark.sql(
                 "SELECT year, month, day, cities, sum " +
                         "FROM tmp WHERE sum >= 18 " +
                         "GROUP BY year, month, day, cities, sum");
-        //tmpResult.sort("year", "month", "day").show(50);
+
 
         tmpResult.createOrReplaceTempView("tmp2");
         //città con almeno 15 giorni al mese di cielo sereno
@@ -68,7 +70,7 @@ public class SQLQuery1 {
                                 "GROUP BY year, month, cities) " +
                         "WHERE numdays >= 15 " +
                         "ORDER BY year");
-        //clearSkyDays.show(50);
+
 
 
         clearSkyDays.createOrReplaceTempView("finaleView");

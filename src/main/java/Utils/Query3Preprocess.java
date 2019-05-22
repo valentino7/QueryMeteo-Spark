@@ -16,33 +16,24 @@ import java.util.Map;
 public class Query3Preprocess {
 
     // input (date,city,values)
-
     // output (year,month,hour,nation,city )
     public static JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> executeProcess(Map<String, Tuple2<String,String>> nations,JavaRDD<Tuple3<String,String,Double>> values) {
 
+/*
+        .mapToPair :return RDD<K,V> where:
+                        K = ( year , month , hour , nation ,city )
+                        V = ( temperature, count )
+
+        .filter : remove null values
+*/
 
         return values
-                .mapToPair(new PairFunction<Tuple3<String, String, Double>, Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double, Double>>() {
-                    @Override
-                    public Tuple2<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double, Double>> call(Tuple3<String, String, Double> tuple) throws Exception {
+                .mapToPair((PairFunction<Tuple3<String, String, Double>, Tuple5<Integer, Integer, Integer, String, String>, Tuple2<Double, Double>>) tuple -> {
+                    ZonedDateTime dateTime = ConvertTime.convertTime(tuple._1(),nations.get(tuple._2())._2());
+                    return new Tuple2<>(new Tuple5<>(dateTime.getYear(), dateTime.getMonth().getValue(), dateTime.getHour(),nations.get(tuple._2())._1() ,tuple._2() ), new Tuple2<>(  (tuple._3() > 400)  ? tuple._3()/1000 : tuple._3() ,1.0)  );
 
-                        // read date time in custom format
-                        String datePattern = "yyyy-MM-dd HH:mm:ss";
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
-                        LocalDateTime date = LocalDateTime.parse(tuple._1(), formatter);
-
-
-                        // transform local date time in UTC format
-                        ZoneId utcZone = ZoneOffset.UTC;
-                        ZonedDateTime utcTime = ZonedDateTime.of(date,utcZone);
-
-                        // convert UTC datetime in ZoneID datetime
-                        ZonedDateTime dateTime = utcTime.withZoneSameInstant(ZoneId.of(nations.get(tuple._2())._2()));
-
-
-                        return new Tuple2<>(new Tuple5<>(dateTime.getYear(), dateTime.getMonth().getValue(), dateTime.getHour(),nations.get(tuple._2())._1() ,tuple._2() ), new Tuple2<>(  (tuple._3() > 400)  ? tuple._3()/1000 : tuple._3() ,1.0)  );
-
-                    }
-                });
+                })
+                .filter(v1 -> v1._2._1() != 0.0)
+                .cache();
     }
 }

@@ -1,6 +1,7 @@
 package sparkSQL;
 
 
+import Utils.Constants;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -30,11 +31,11 @@ public class SQLQuery2 {
 
         //creo lo schema
         List<StructField> fields = new ArrayList<>();
-        fields.add(DataTypes.createStructField("year", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("month", DataTypes.IntegerType, true));
-        fields.add(DataTypes.createStructField("country", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("value", DataTypes.DoubleType, true));
-        fields.add(DataTypes.createStructField("count", DataTypes.DoubleType, true));
+        fields.add(DataTypes.createStructField(Constants.YEAR_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.MONTH_LABEL, DataTypes.IntegerType, true));
+        fields.add(DataTypes.createStructField(Constants.COUNTRY_LABEL, DataTypes.StringType, true));
+        fields.add(DataTypes.createStructField(Constants.VALUE_LABEL, DataTypes.DoubleType, true));
+        fields.add(DataTypes.createStructField(Constants.COUNT_LABEL, DataTypes.DoubleType, true));
 
         StructType schema = DataTypes.createStructType(fields);
 

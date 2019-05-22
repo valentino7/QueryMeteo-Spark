@@ -29,12 +29,12 @@ public class ControllerQuery3 {
 
     public static Dataset<Row> convertToDataset(SparkSession spark, JavaPairRDD<String, List<Tuple2<String,Integer> >>  result){
         List<StructField> fields = new ArrayList<>();
-        fields.add(DataTypes.createStructField("country", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("city", DataTypes.StringType, true));
-        fields.add(DataTypes.createStructField("currentYear", DataTypes.IntegerType, false));
-        fields.add(DataTypes.createStructField("currentPosition", DataTypes.IntegerType, false));
-        fields.add(DataTypes.createStructField("LastYear", DataTypes.IntegerType, false));
-        fields.add(DataTypes.createStructField("LastPosition", DataTypes.IntegerType, false));
+        fields.add(DataTypes.createStructField(Constants.COUNTRY_LABEL, DataTypes.StringType, true));
+        fields.add(DataTypes.createStructField(Constants.CITY_LABEL, DataTypes.StringType, true));
+        fields.add(DataTypes.createStructField(Constants.CURRENTYEAR_LABEL, DataTypes.IntegerType, false));
+        fields.add(DataTypes.createStructField(Constants.CURRENTPOSITION_LABEL, DataTypes.IntegerType, false));
+        fields.add(DataTypes.createStructField(Constants.LASTYEAR_LABEL, DataTypes.IntegerType, false));
+        fields.add(DataTypes.createStructField(Constants.LASTPOSITION_LABEL, DataTypes.IntegerType, false));
         StructType schemata = DataTypes.createStructType(fields);
 
 
@@ -57,16 +57,13 @@ public class ControllerQuery3 {
 
     public static void executeMain(String HDFS_ROOT){
 
-        SparkSession spark = Context.getContext("query3");
-        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
-        sc.hadoopConfiguration().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
+        SparkSession spark = Context.getSession(Constants.QUERY3_NAME);
 
-        Dataset<Row> inputData = spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.TEMPERATURE_FILE_CSV);
-        //Nations
-        Dataset<Row> city_file = spark.read().option("header","true").csv(HDFS_ROOT+Constants.HDFS_INPUT+Constants.CITY_FILE_CSV);
+        Dataset<Row> inputData = spark.read().option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.TEMPERATURE_FILE_CSV);
+        Dataset<Row> city_file = spark.read().option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).csv(HDFS_ROOT+Constants.HDFS_INPUT+Constants.CITY_FILE_CSV);
 
         //Nations
-        Map<String, Tuple2<String,String>> country = Nations.getNation(spark, city_file);
+        Map<String, Tuple2<String,String>> country = Nations.getNation(city_file);
         JavaRDD<Tuple3<String,String,Double>> valuesq3 = AllQueryPreProcess.executePreProcess(inputData,3);
         JavaPairRDD<Tuple5<Integer, Integer,Integer,String, String>, Tuple2<Double,Double>> preprocess = Query3Preprocess.executeProcess(country,valuesq3);
 
@@ -75,10 +72,10 @@ public class ControllerQuery3 {
         //getTIme
 
         Dataset<Row> res = convertToDataset(spark,result);
-        res.coalesce(1).write().format("json").option("header", "true").save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY3);
+        res.coalesce(1).write().format(Constants.JSON_FORMAT).option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY3);
 
         Dataset<Row> resultSQL = SQLQuery3.executeQuery(spark,preprocess);
-        resultSQL.coalesce(1).write().format("json").option("header", "true").save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY3_SQL);
+        resultSQL.coalesce(1).write().format(Constants.JSON_FORMAT).option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).save(HDFS_ROOT+Constants.HDFS_MONGO_QUERY3_SQL);
 
         spark.stop();
     }
