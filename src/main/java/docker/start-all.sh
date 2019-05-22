@@ -22,6 +22,6 @@ python activate_processor_nifi.py 1 $NIFI_HOST
 
 
 
-#sleep 10
-#python activate_processor_nifi.py 2 $NIFI_HOST
+
+python activate_processor_nifi.py 2 $NIFI_HOST
 

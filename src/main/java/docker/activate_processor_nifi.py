@@ -24,6 +24,15 @@ def run_input(ip):
     page["status"]["runStatus"]="ENABLED"
     requests.put(url_service, json=page)
     
+    while(True):
+        page=send_request(url_service)
+        print "ciao"
+        if  page["component"]["state"]=="ENABLED" and page["status"]["runStatus"]=="ENABLED":
+            print "miao"
+            break
+        time.sleep(2)
+    
+    
     #cerco l'id del processorGroup
     url_search_id_processorGroup= 'http://'+ip+':9999/nifi-api/flow/search-results?q=PutcsvToHDFSinParquet'
     page=send_request(url_search_id_processorGroup)
@@ -42,9 +51,7 @@ def run_input(ip):
     return True
 
 def output(ip):
-    print ip
     url = 'http://'+ip+':9999/nifi-api/flow/search-results?q=a96673f5-bffe-32f8'
-    print url
     page=send_request(url)
     #cerco l'id del service
     properties=page["searchResultsDTO"]["processorResults"][0]["matches"]
@@ -58,15 +65,21 @@ def output(ip):
     page["component"]["state"]="ENABLED"
     page["status"]["runStatus"]="ENABLED"
     requests.put(url_service, json=page)
+        
+    while(True):
+        page=send_request(url_service)
+        print "ciao"
+        if  page["component"]["state"]=="ENABLED" and page["status"]["runStatus"]=="ENABLED":
+            print "miao"
+            break
+        time.sleep(2)
     
      #cerco l'id del processorGroup
     url_search_id_processorGroup= 'http://'+ip+':9999/nifi-api/flow/search-results?q=exportHDFSToDbs'
     page=send_request(url_search_id_processorGroup)
     group_id=page["searchResultsDTO"]["processGroupResults"][0]["id"]
     
-    print url_service
-    
-    #time.sleep(5)
+   
     
     #run
     url_run='http://'+ip+':9999/nifi-api/flow/process-groups/'+group_id
