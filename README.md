@@ -34,19 +34,27 @@ Query:
   dell’anno precedente (2016).
   
   
+Prerequisiti:
+    * python 2.7
+    * docker
+    * docker-compose
+    * java 8
 Avvio:
 
     cd src/main/java/docker/
     ./start-all.sh
+    TAG:
+            --deploy : effettual il deploy del jar sul cluster spark
+
     
 start all avvia automaticamente i seguenti script:
-   start-hdfs.sh : avvia dentro l'ambiente docker un cluster 
-   nifi-run.sh
-   start-hbase.sh
-   init-db.sh
-   mongo-server-start.sh
-   spark-run.sh
+   * start-hdfs.sh : avvia 4 container di hdfs 1 master e 3 worker
+   * nifi-run.sh : avvia un container con apache-nifi
+   * start-hbase.sh : avvia 1 container con apache-hbase
+   * init-db.sh : crea le tabelle dentro hbase per le 3 query
+   * mongo-server-start.sh : avvia dentro un container mongo db
+   * spark-run.sh : avvia tramite docker-compose 3 container: un master e 2 worker di spark
+   *activate_processo_nifi.py : script in python per attivare automaticamente l'injection dei file nell'hdfs tramite nifi
+       e per riempire le tabelle dei db una volta terminata l'esecuzione
     
-    TAG:
-        --deploy : effettual il deploy del jar sul cluster spark
-        --local : effettua il deploy del jar localmente
+    
