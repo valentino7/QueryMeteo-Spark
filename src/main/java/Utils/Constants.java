@@ -42,7 +42,7 @@ public class Constants {
     public static final String YEAR_LABEL = "year";
     public static final String MONTH_LABEL = "month";
     public static final String CITY_LABEL = "city";
-    public static final String WEATHER_LABEL = "city";
+    public static final String WEATHER_LABEL = "weather";
     public static final String COUNTRY_LABEL = "country";
     public static final String DAY_LABEL = "day";
     public static final String HOUR_LABEL = "hour";

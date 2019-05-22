@@ -5,14 +5,14 @@ def send_request(url):
     return request
 
 def wait_spark(ip):
-    url = 'http://'+str(ip)+':8080'
+    url = 'http://'+str(ip)
     while(True):
         page=send_request(url)
         s = '<td>FINISHED</td>'
         result = re.findall(s, page.text)
         if len(result)==3:
             break
-        sleep(10)
+        time.sleep(10)
         
     print result
     return True
