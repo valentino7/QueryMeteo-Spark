@@ -17,13 +17,8 @@ docker cp ../../../../target/spark-1.0-jar-with-dependencies.jar spark_master:/u
 docker cp ../../../../target/spark-1.0-jar-with-dependencies.jar spark_worker:/usr/spark-2.4.2/spark-1.0.jar
 docker cp ../../../../target/spark-1.0-jar-with-dependencies.jar spark_worker_1:/usr/spark-2.4.2/spark-1.0.jar
 
-if [ "$1" == "--deploy" ]; then
-    docker exec spark_master /bin/bash -c "bin/spark-submit --executor-memory 512m --class MainSpark spark-1.0.jar $HOST_HDFS:$HDFS_PORT"
-fi
-if [ "$1" == "--local" ]; then
-    cd ../../../..
-    ls
-    java -jar target/spark-1.0-jar-with-dependencies.jar $HOST_HDFS:$HDFS_PORT
-fi
+
+docker exec spark_master /bin/bash -c "bin/spark-submit --executor-memory 512m --class MainSpark spark-1.0.jar $HOST_HDFS:$HDFS_PORT"
+
 
 
