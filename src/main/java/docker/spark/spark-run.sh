@@ -1,4 +1,5 @@
- 
+ cd spark/
+
 HOST_HDFS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' master)
 HDFS_PORT=54310
 docker-compose up -d
@@ -10,10 +11,19 @@ until $(curl --output /dev/null --silent --head --fail http://$SPARK_HOST:$SPARK
     sleep 5s # Or 10s or 1m or whatever time
 done
 
+cd ..
 
-docker cp ./spark-1.0.jar spark_master:/usr/spark-2.4.2
-docker cp ./spark-1.0.jar spark_worker:/usr/spark-2.4.2
-docker cp ./spark-1.0.jar spark_worker_1:/usr/spark-2.4.2
+docker cp ../../../../target/spark-1.0-jar-with-dependencies.jar spark_master:/usr/spark-2.4.2/spark-1.0.jar
+docker cp ../../../../target/spark-1.0-jar-with-dependencies.jar spark_worker:/usr/spark-2.4.2/spark-1.0.jar
+docker cp ../../../../target/spark-1.0-jar-with-dependencies.jar spark_worker_1:/usr/spark-2.4.2/spark-1.0.jar
+
+if [ "$1" == "--deploy" ]; then
+    docker exec spark_master /bin/bash -c "bin/spark-submit --executor-memory 512m --class MainSpark spark-1.0.jar $HOST_HDFS:$HDFS_PORT"
+fi
+if [ "$1" == "--local" ]; then
+    cd ../../../..
+    ls
+    java -jar target/spark-1.0-jar-with-dependencies.jar $HOST_HDFS:$HDFS_PORT
+fi
 
 
-docker exec spark_master /bin/bash -c "bin/spark-submit --executor-memory 512m --class MainSpark ../../../../target/spark-1.0-jar-with-dependencies.jar $HOST_HDFS:$HDFS_PORT"

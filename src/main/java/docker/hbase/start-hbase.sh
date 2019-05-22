@@ -14,4 +14,4 @@ until $(curl --output /dev/null --silent --head --fail http://$HOST_HBASE:$PORT_
     printf '.'
     sleep 5s # Or 10s or 1m or whatever time
 done
-docker cp ./hbase-site.xml hbase:/hbase/conf/hbase-site.xml
+docker cp ./hbase/hbase-site.xml hbase:/hbase/conf/hbase-site.xml

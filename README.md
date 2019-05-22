@@ -32,3 +32,21 @@ Query:
   perature medie nella fascia oraria locale 12:00-15:00 nei mesi di giugno, luglio, agosto e settembre ri-
   spetto ai mesi di gennaio, febbraio, marzo e aprile. Confrontare la posizione delle città nella classifica
   dell’anno precedente (2016).
+  
+  
+Avvio:
+
+    cd src/main/java/docker/
+    ./start-all.sh
+    
+start all avvia automaticamente i seguenti script:
+   start-hdfs.sh : avvia dentro l'ambiente docker un cluster 
+   nifi-run.sh
+   start-hbase.sh
+   init-db.sh
+   mongo-server-start.sh
+   spark-run.sh
+    
+    TAG:
+        --deploy : effettual il deploy del jar sul cluster spark
+        --local : effettua il deploy del jar localmente

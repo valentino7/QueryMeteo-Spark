@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 #start cluster hdfs
 ./hdfs/start-hdfs.sh
 
@@ -15,12 +16,12 @@ python activate_processor_nifi.py 1 $NIFI_HOST
 ./mongo/mongo-server-start.sh
 
 
-
 #SPARK
-./spark/spark-run.sh
+./spark/spark-run.sh $1
+
+
 
 
 #sleep 10
 #python activate_processor_nifi.py 2 $NIFI_HOST
-
 
