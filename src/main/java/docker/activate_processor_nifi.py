@@ -1,4 +1,4 @@
-import sys, re,json,requests
+import sys, re,json,requests,time
 
 
 
@@ -29,6 +29,8 @@ def run_input(ip):
     page=send_request(url_search_id_processorGroup)
     group_id=page["searchResultsDTO"]["processGroupResults"][0]["id"]
     
+    time.sleep(5)
+    
     #run
     url_run='http://'+ip+':9999/nifi-api/flow/process-groups/'+group_id
     json_run={
@@ -42,6 +44,7 @@ def run_input(ip):
 def output(ip):
     print ip
     url = 'http://'+ip+':9999/nifi-api/flow/search-results?q=a96673f5-bffe-32f8'
+    print url
     page=send_request(url)
     #cerco l'id del service
     properties=page["searchResultsDTO"]["processorResults"][0]["matches"]
@@ -60,6 +63,10 @@ def output(ip):
     url_search_id_processorGroup= 'http://'+ip+':9999/nifi-api/flow/search-results?q=exportHDFSToDbs'
     page=send_request(url_search_id_processorGroup)
     group_id=page["searchResultsDTO"]["processGroupResults"][0]["id"]
+    
+    print url_service
+    
+    #time.sleep(5)
     
     #run
     url_run='http://'+ip+':9999/nifi-api/flow/process-groups/'+group_id

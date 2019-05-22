@@ -4,3 +4,4 @@ docker exec -i  hbase hbase shell << EOF
     create 'Query3', 'core','SQL'
 EOF
  
+
