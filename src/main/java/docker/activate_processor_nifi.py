@@ -26,9 +26,8 @@ def run_input(ip):
     
     while(True):
         page=send_request(url_service)
-        print "ciao"
+        print "."
         if  page["component"]["state"]=="ENABLED" and page["status"]["runStatus"]=="ENABLED":
-            print "miao"
             break
         time.sleep(2)
     
