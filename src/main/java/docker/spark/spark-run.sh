@@ -21,4 +21,5 @@ docker cp ../../../../target/spark-1.0-jar-with-dependencies.jar spark_worker_1:
 docker exec spark_master /bin/bash -c "bin/spark-submit --executor-memory 512m --class MainSpark spark-1.0.jar $HOST_HDFS:$HDFS_PORT"
 
 
+python wait_spark.py $SPARK_HOST:$SPARK_PORT
 

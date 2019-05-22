@@ -23,7 +23,5 @@ if [ "$1" == "--deploy" ]; then
     ./spark/spark-run.sh
 fi
 
-python wait_spark.py $NIFI_HOST
-
 python activate_processor_nifi.py 2 $NIFI_HOST
 
