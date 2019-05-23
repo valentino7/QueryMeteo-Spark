@@ -40,6 +40,7 @@ Prerequisiti:
     docker
     docker-compose
     java 8
+    maven
     
 Avvio:
 
@@ -55,10 +56,12 @@ Avvio:
              compile:  tutte le librerie nel pom che hanno questo scope veranno inserire nel jar
              provided:  tutte le librerie nel pom che hanno questo scope non veranno inserire nel jar
     
+    mvn clean package
     cd src/main/java/docker/
     ./start-all.sh
-    TAG:
-            --submit : effettual il deploy del jar sul cluster spark
+    ARGOMENTI:
+            --submit : effettua il deploy del jar sul cluster spark
+    senza l'argomento --submit non verranno effettuato il submit delle query sul cluster di spark
 
     
 start all avvia automaticamente i seguenti script:

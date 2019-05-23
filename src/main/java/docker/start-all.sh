@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Insert --deploy parameter if you want to submit topology in spark cluster"
+echo "Insert --submit parameter if you want to submit topology in spark cluster"
 
 #start cluster hdfs
 ./hdfs/start-hdfs.sh
@@ -19,7 +19,7 @@ python activate_processor_nifi.py 1 $NIFI_HOST
 
 
 #SPARK
-if [ "$1" == "--deploy" ]; then
+if [ "$1" == "--submit" ]; then
     ./spark/spark-run.sh
 fi
 
