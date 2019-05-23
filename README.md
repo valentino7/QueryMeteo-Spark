@@ -35,10 +35,12 @@ Query:
   
   
 Prerequisiti:
-    * python 2.7
-    * docker
-    * docker-compose
-    * java 8
+
+    python 2.7
+    docker
+    docker-compose
+    java 8
+    
 Avvio:
 
     cd src/main/java/docker/
@@ -52,9 +54,10 @@ start all avvia automaticamente i seguenti script:
    * nifi-run.sh : avvia un container con apache-nifi
    * start-hbase.sh : avvia 1 container con apache-hbase
    * init-db.sh : crea le tabelle dentro hbase per le 3 query
-   * mongo-server-start.sh : avvia dentro un container mongo db
+   * mongo-server-start.sh : avvia un container con mongo db
    * spark-run.sh : avvia tramite docker-compose 3 container: un master e 2 worker di spark
-   *activate_processo_nifi.py : script in python per attivare automaticamente l'injection dei file nell'hdfs tramite nifi
-       e per riempire le tabelle dei db una volta terminata l'esecuzione
+   *activate_processo_nifi.py : script in python per attivare automaticamente l'injection dei file di input nell'hdfs tramite nifi
+       e per riempire le tabelle dei db una volta terminata l'esecuzione delle query
+       
     
     
