@@ -73,7 +73,7 @@ start all avvia automaticamente i seguenti script:
    * start-hbase.sh : avvia 1 container con apache-hbase
    * init-db.sh : crea le tabelle dentro hbase per le 3 query
    * mongo-server-start.sh : avvia un container con mongo db
-   * spark-run.sh : avvia tramite docker-compose 3 container: un master e 2 worker di spark, verrà eseguito solamente se presenta l'argomento --submit
+   * spark-run.sh : avvia tramite docker-compose 3 container: un master e 2 worker di spark, verrà eseguito solamente se presente l'argomento --submit
    * activate_processo_nifi.py : script in python per attivare automaticamente l'injection dei file di input nell'hdfs tramite nifi
        e per riempire le tabelle dei db una volta terminata l'esecuzione delle query
        
