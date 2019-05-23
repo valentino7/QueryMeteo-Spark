@@ -15,10 +15,10 @@ public class MainSpark {
 
         String HDFS_ROOT = "hdfs://"+ args[0]+"/";
 
-        System.out.println(HDFS_ROOT);
+        //System.out.println(HDFS_ROOT);
 
-        ControllerQuery1.executeMain(HDFS_ROOT);
-        ControllerQuery2.executeMain(HDFS_ROOT);
-        ControllerQuery3.executeMain(HDFS_ROOT);
+        ControllerQuery1.executeMain(HDFS_ROOT, args[1]);
+        ControllerQuery2.executeMain(HDFS_ROOT, args[1]);
+        ControllerQuery3.executeMain(HDFS_ROOT, args[1]);
     }
 }

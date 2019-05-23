@@ -42,27 +42,30 @@ Prerequisiti:
     java 8
     maven
     
-Avvio:
-
-    modificare il pom nel seguente modo se si vuole avviare lo script start-all con l'argomento --submit: 
-         <properties>
-                <framework.scope>compile</framework.scope>
-         </properties>
-         andrà sostituito con 
-         <properties>
-                <framework.scope>provided</framework.scope>
-         </properties>
-         quando viene generato il jar con il comando mvn clean package se è presente 
-             compile:  tutte le librerie nel pom che hanno questo scope veranno inserire nel jar
-             provided:  tutte le librerie nel pom che hanno questo scope non veranno inserire nel jar
+Avvio :
     
+    ./start-all.sh avvia l'architettura (senza avviare spark) in un ambiente cointenerizzato in locale
+    ./start-all.sh --submit avvia anche spark in un ambiente cointenerizzato in locale
+   
+    per avviare lo script start-all in modo che effettui automaticamente il submit delle query dentro il container di spark 
+    è necessario effettuare delle modifiche al pom e successivamente creare il jar del progetto
+        
+    modifiche nel pom:
+        deploy in spark docker :  <framework.scope>provided</framework.scope>
+        deploy in spark local mode : <framework.scope>compile</framework.scope>
+         
+        
+    posizionarsi nella directory principale del progetto
     mvn clean package
     cd src/main/java/docker/
-    ./start-all.sh
-    ARGOMENTI:
-            --submit : effettua il deploy del jar sul cluster spark
-    senza l'argomento --submit non verranno effettuato il submit delle query sul cluster di spark
-
+    ./start-all.sh --submit
+     oppure 
+    ./start-all.sh 
+    in questo secondo caso per avviare le query di spark in local mode 
+    è necessario avviare la classe MainSpark da intellij con parametri: <HOST_HDFS>:<HDFS_PORT> local
+    
+    
+    
     
 start all avvia automaticamente i seguenti script:
    * start-hdfs.sh : avvia 4 container di hdfs 1 master e 3 worker
@@ -70,8 +73,8 @@ start all avvia automaticamente i seguenti script:
    * start-hbase.sh : avvia 1 container con apache-hbase
    * init-db.sh : crea le tabelle dentro hbase per le 3 query
    * mongo-server-start.sh : avvia un container con mongo db
-   * spark-run.sh : avvia tramite docker-compose 3 container: un master e 2 worker di spark
-   *activate_processo_nifi.py : script in python per attivare automaticamente l'injection dei file di input nell'hdfs tramite nifi
+   * spark-run.sh : avvia tramite docker-compose 3 container: un master e 2 worker di spark, verrà eseguito solamente se presenta l'argomento --submit
+   * activate_processo_nifi.py : script in python per attivare automaticamente l'injection dei file di input nell'hdfs tramite nifi
        e per riempire le tabelle dei db una volta terminata l'esecuzione delle query
        
     

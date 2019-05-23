@@ -35,9 +35,9 @@ public class ControllerQuery1 {
         return spark.sqlContext().createDataFrame(rows, schemata);
     }
 
-    public static void executeMain(String HDFS_ROOT) {
+    public static void executeMain(String HDFS_ROOT, String mode) {
 
-        SparkSession spark = Context.getSession(Constants.QUERY1_NAME);
+        SparkSession spark = Session.getSession(Constants.QUERY1_NAME,mode);
 
         Dataset<Row> inputData = spark.read().option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.WEATHER_FILE_CSV);
         Dataset<Row> city_file = spark.read().option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).csv(HDFS_ROOT+Constants.HDFS_INPUT +Constants.CITY_FILE_CSV);
@@ -69,7 +69,7 @@ public class ControllerQuery1 {
     public static void main(String[] args) {
 
         String HDFS_ROOT = "hdfs://"+ args[0]+"/";
-        ControllerQuery1.executeMain(HDFS_ROOT);
+        ControllerQuery1.executeMain(HDFS_ROOT, args[1]);
     }
 
 }

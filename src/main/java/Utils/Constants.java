@@ -25,7 +25,7 @@ public class Constants {
     public static final String HDFS_INPUT ="input/";
 
 
-    public static final String USAGE = "Usage: MainSpark <HDFS_MasterIP:PORT>";
+    public static final String USAGE = "Usage: MainSpark <HDFS_MasterIP:PORT> <mode>";
     public static final String QUERY1_NAME = "query1";
     public static final String QUERY2_NAME = "query2";
     public static final String QUERY3_NAME = "query3";

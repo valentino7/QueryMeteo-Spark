@@ -3,7 +3,6 @@ package Controllers;
 import Utils.*;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -40,9 +39,9 @@ public class ControllerQuery2 {
         return spark.sqlContext().createDataFrame(rows, schemata);
     }
 
-    public static void executeMain(String HDFS_ROOT){
+    public static void executeMain(String HDFS_ROOT,String mode){
 
-        SparkSession spark = Context.getSession(Constants.QUERY2_NAME);
+        SparkSession spark = Session.getSession(Constants.QUERY2_NAME,mode);
 
         Dataset<Row> city_file = spark.read().option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).csv(HDFS_ROOT +Constants.HDFS_INPUT+Constants.CITY_FILE_CSV);
         Map<String, Tuple2<String,String>> country = Nations.getNation(city_file);
@@ -77,7 +76,7 @@ public class ControllerQuery2 {
     public static void main(String[] args) {
 
         String HDFS_ROOT = "hdfs://"+ args[0]+"/";
-        ControllerQuery2.executeMain(HDFS_ROOT);
+        ControllerQuery2.executeMain(HDFS_ROOT, args[1]);
 
     }
 }
