@@ -43,10 +43,22 @@ Prerequisiti:
     
 Avvio:
 
+    modificare il pom nel seguente modo se si vuole avviare lo script start-all con l'argomento --submit: 
+         <properties>
+                <framework.scope>compile</framework.scope>
+         </properties>
+         andrà sostituito con 
+         <properties>
+                <framework.scope>provided</framework.scope>
+         </properties>
+         quando viene generato il jar con il comando mvn clean package se è presente 
+             compile:  tutte le librerie nel pom che hanno questo scope veranno inserire nel jar
+             provided:  tutte le librerie nel pom che hanno questo scope non veranno inserire nel jar
+    
     cd src/main/java/docker/
     ./start-all.sh
     TAG:
-            --deploy : effettual il deploy del jar sul cluster spark
+            --submit : effettual il deploy del jar sul cluster spark
 
     
 start all avvia automaticamente i seguenti script:
