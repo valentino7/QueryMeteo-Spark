@@ -14,11 +14,6 @@ public class Constants {
     public static final String TEMPERATURE_FILE_CSV ="temperature.csv";
     public static final String TEMPERATURE_FILE_PARQUET ="temperature.csv";
     public static final String HUMIDITY_FILE ="humidity.csv";
-    public static final int FILE_TYPE =0;
-    public static final int NUM_OF_FILE =2;
-
-    //public static final String HDFS_ROOT="hdfs://192.168.64.7:54310/";
-
     public static final String HDFS_MONGO_QUERY1 ="results/mongo/query1";
     public static final String HDFS_MONGO_QUERY2 ="results/mongo/query2/file";
     public static final String HDFS_MONGO_QUERY3 ="results/mongo/query3";
@@ -49,7 +44,7 @@ public class Constants {
     public static final String CURRENTYEAR_LABEL = "currentYear";
     public static final String LASTYEAR_LABEL = "lastYear";
     public static final String CURRENTPOSITION_LABEL = "currentPosition";
-    public static final String LASTPOSITION_LABEL = "currentPosition";
+    public static final String LASTPOSITION_LABEL = "lastPosition";
     public static final String TEMPERATURE_LABEL = "temperature";
 
     public static final String VALUE_LABEL = "value";
