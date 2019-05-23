@@ -14,13 +14,13 @@ public class Constants {
     public static final String TEMPERATURE_FILE_CSV ="temperature.csv";
     public static final String TEMPERATURE_FILE_PARQUET ="temperature.csv";
     public static final String HUMIDITY_FILE ="humidity.csv";
-    public static final String HDFS_MONGO_QUERY1 ="results/mongo/query1";
-    public static final String HDFS_MONGO_QUERY2 ="results/mongo/query2/file";
-    public static final String HDFS_MONGO_QUERY3 ="results/mongo/query3";
+    public static final String HDFS_MONGO_QUERY1 ="results/1";
+    public static final String HDFS_MONGO_QUERY2 ="results/2/file";
+    public static final String HDFS_MONGO_QUERY3 ="results/3";
 
-    public static final String HDFS_MONGO_QUERY1_SQL ="results/mongoSQL/query1";
-    public static final String HDFS_MONGO_QUERY2_SQL ="results/mongoSQL/query2/file";
-    public static final String HDFS_MONGO_QUERY3_SQL ="results/mongoSQL/query3";
+    public static final String HDFS_MONGO_QUERY1_SQL ="results/4";
+    public static final String HDFS_MONGO_QUERY2_SQL ="results/5/fileSQL";
+    public static final String HDFS_MONGO_QUERY3_SQL ="results/6";
 
     public static final String HDFS_INPUT ="input/";
 

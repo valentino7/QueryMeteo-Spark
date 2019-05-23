@@ -61,12 +61,26 @@ public class ControllerQuery2 {
 
             //resultsDS.write().format("parquet").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
             //resultsDS.write().format("csv").option("header", "true").save(Constants.HDFS_HBASE_QUERY1);
-            res.coalesce(1).write().format(Constants.JSON_FORMAT).option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).save(HDFS_ROOT+ Constants.HDFS_MONGO_QUERY2+i);
+
+            String folderName= "";
+            switch (i){
+                case 0:
+                    folderName = "temperature";
+                    break;
+                case 1:
+                    folderName = "pressure";
+                    break;
+                case 2:
+                    folderName = "humidity";
+                    break;
+            }
+
+            res.coalesce(1).write().format(Constants.JSON_FORMAT).option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).save(HDFS_ROOT+ Constants.HDFS_MONGO_QUERY2+folderName);
 
 
             Dataset<Row> resultSQL = SQLQuery2.executeQuery(spark,dt);
 
-            resultSQL.coalesce(1).write().format(Constants.JSON_FORMAT).option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).save(HDFS_ROOT+ Constants.HDFS_MONGO_QUERY2_SQL+ i );
+            resultSQL.coalesce(1).write().format(Constants.JSON_FORMAT).option(Constants.HEADER_OPTION,Constants.HEADER_BOOL).save(HDFS_ROOT+ Constants.HDFS_MONGO_QUERY2_SQL+ (i+7));
 
         }
 

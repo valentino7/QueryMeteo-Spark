@@ -21,7 +21,8 @@ python activate_processor_nifi.py 1 $NIFI_HOST
 #SPARK
 if [ "$1" == "--submit" ]; then
     ./spark/spark-run.sh
+    python activate_processor_nifi.py 2 $NIFI_HOST
 fi
 
-python activate_processor_nifi.py 2 $NIFI_HOST
+
 
