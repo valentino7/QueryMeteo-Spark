@@ -44,24 +44,37 @@ Prerequisiti:
     
 Avvio :
     
-    ./start-all.sh avvia l'architettura (senza avviare spark) in un ambiente cointenerizzato in locale
-    ./start-all.sh --submit avvia anche spark in un ambiente cointenerizzato in locale
+    ./start-all.sh -> avvia l'architettura (senza avviare spark) in un ambiente cointenerizzato in locale
+    ./start-all.sh --submit -> avvia anche spark in un ambiente cointenerizzato in locale con 2 worker
    
-    per avviare lo script start-all in modo che effettui automaticamente il submit delle query dentro il container di spark 
-    è necessario effettuare delle modifiche al pom e successivamente creare il jar del progetto
+    Lanciando il comando : 
+        ./start-all.sh --submit
+    è possibile avviare l'intera architettura in un ambiente contenerizzato in locale.
+    Il jar dell'applicazione è già presenta nella directory target. Qualora si volesse ricostruire il jar
+    lanciare il comando "mvn clean package" nella directory principale del progetto.
         
-    modifiche nel pom:
-        deploy in spark docker :  <framework.scope>provided</framework.scope>
-        deploy in spark local mode : <framework.scope>compile</framework.scope>
-         
-    posizionarsi nella directory principale del progetto
-    mvn clean package
-    cd src/main/java/docker/
-    ./start-all.sh --submit
-     oppure 
-    ./start-all.sh 
-    in questo secondo caso per avviare le query di spark in local mode 
-    è necessario avviare la classe MainSpark da intellij con parametri: <HOST_HDFS>:<HDFS_PORT> local
+    
+    Lanciando il comando :
+        ./start-all.sh 
+    verranno creati gli stessi container docker del comando precedente a meno di Spark. 
+    Quindi è possibile avviare le query con la classe MainSpark nel proprio ambiente di sviluppo, ad esempio
+    Intellj, con i parametri: <HOST_HDFS>:<HDFS_PORT> local.
+    Prima di avviare l'applicazione bisogna inoltre modificare nel pom:
+       deploy in spark docker :  <framework.scope>provided</framework.scope>
+       deploy in spark local mode : <framework.scope>compile</framework.scope>
+       
+Stop:
+
+    ./stop-all.sh
+                                        
+Dashboard:
+
+    Dopo aver lanciato lo script di start-all.sh è possibile visualizzare i risultati nelle varie Dashboard:
+    HDFS-> http://localhost:9870
+    Apache-Nifi-> http://localhost:9999/nifi/
+    Apache-Spark (se presente)-> http://localhost:8080
+    Hbase Master-> http://localhost:16010/master-status
+    Mongo-> contattabile tramite lo script "mongo-client-start.sh" nella directory docker/mongo/
     
     
     

@@ -50,7 +50,7 @@ def run_input(ip):
     return True
 
 def output(ip):
-    url = 'http://'+ip+':9999/nifi-api/flow/search-results?q=a96673f5-bffe-32f8'
+    url = 'http://'+ip+':9999/nifi-api/flow/search-results?q=06548895-69ab-317e'
     page=send_request(url)
     #cerco l'id del service
     properties=page["searchResultsDTO"]["processorResults"][0]["matches"]
