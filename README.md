@@ -1,7 +1,7 @@
 # spark_project
 
 
-File (in Data directory): 
+File (in input directory): 
 
   * __city attributes.csv__: per ogni città, viene riportata la latitudine e la longitudine;
 
@@ -54,7 +54,6 @@ Avvio :
         deploy in spark docker :  <framework.scope>provided</framework.scope>
         deploy in spark local mode : <framework.scope>compile</framework.scope>
          
-        
     posizionarsi nella directory principale del progetto
     mvn clean package
     cd src/main/java/docker/

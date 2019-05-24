@@ -19,6 +19,6 @@ public class MainSpark {
 
         ControllerQuery1.executeMain(HDFS_ROOT, args[1]);
         ControllerQuery2.executeMain(HDFS_ROOT, args[1]);
-        //ControllerQuery3.executeMain(HDFS_ROOT, args[1]);
+        ControllerQuery3.executeMain(HDFS_ROOT, args[1]);
     }
 }

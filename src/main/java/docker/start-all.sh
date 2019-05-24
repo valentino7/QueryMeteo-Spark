@@ -14,7 +14,7 @@ python activate_processor_nifi.py 1 $NIFI_HOST
 ./hbase/start-hbase.sh
 ./hbase/init-db.sh
 
-#MONGO
+#MONGO.
 ./mongo/mongo-server-start.sh
 
 
