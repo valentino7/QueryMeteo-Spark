@@ -21,19 +21,20 @@ public class AllQueryPreProcess {
 
 
         /*
-
         take header from dataset ( list of city )
-
          */
         List<String> citiesArray= new ArrayList<>(Arrays.asList(inputData.columns()));
         citiesArray.remove(0);
 
-
         /*
 
         .flatMap:
-
-
+            return RDD<date,city,value> where
+                value :
+                    Query1 -> 1 if string equals "sky is clear"
+                              0 other
+                    Query2&3 -> 0 if null value
+                                value of temperature,presure or humidity
          */
 
         return inputData

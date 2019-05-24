@@ -23,9 +23,6 @@ public class SQLQuery2 {
 
     public static Dataset<Row> executeQuery(SparkSession spark,JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > values) {
 
-
-        //Dataset df = sparkCore.read().format("csv").option("header", "true").load(inputPath2);
-
         //creo lo schema
         List<StructField> fields = new ArrayList<>();
         fields.add(DataTypes.createStructField(Constants.YEAR_LABEL, DataTypes.IntegerType, true));

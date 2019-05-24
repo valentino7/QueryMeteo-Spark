@@ -12,7 +12,7 @@ public class Constants {
 
     public static final String PRESSURE_FILE_CSV ="pressure.csv";
     public static final String TEMPERATURE_FILE_CSV ="temperature.csv";
-    public static final String TEMPERATURE_FILE_PARQUET ="temperature.csv";
+    public static final String TEMPERATURE_FILE_PARQUET ="temperature.parquet";
     public static final String HUMIDITY_FILE ="humidity.csv";
     public static final String HDFS_MONGO_QUERY1 ="results/1";
     public static final String HDFS_MONGO_QUERY2 ="results/2/file";
@@ -64,4 +64,6 @@ public class Constants {
     public static final String DATEPATTERN = "yyyy-MM-dd HH:mm:ss";
 
 
+    public static final Double CLEAR_DAY =  18.0 ;
+    public static final Integer CLEAR_MONTH = 15;
 }

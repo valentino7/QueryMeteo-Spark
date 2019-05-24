@@ -16,9 +16,6 @@ public class Query2 {
 
     public static JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple4<Double, Double ,Double, Double>> executeQuery(JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double,Double> > values){
 
-
-        //(Anno,Mese,Nazione) -> ( value, count )
-
         /*
 
         Input : RDD<(Year,Month,Nation), (value,count)> where
@@ -36,7 +33,6 @@ public class Query2 {
 
          */
 
-        // (anno,mese,nazione)
         JavaPairRDD<Tuple3<Integer,Integer,String>,Double> average = values
                 .reduceByKey((tuple1, tuple2) -> new Tuple2<>(tuple1._1()+tuple2._1(), tuple1._2()+ tuple2._2()))
                 .mapValues((Function<Tuple2<Double, Double>, Double>) v1 -> v1._1()/v1._2())
@@ -103,24 +99,16 @@ public class Query2 {
         JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> result_min_max = min.join(max).cache();
         JavaPairRDD<Tuple3<Integer, Integer, String>, Tuple2<Double, Double>> result_avg_stddev = average.join(std_dev).cache();
 
+        /*
+        .join = aggregate all statistics with same key
+
+
+         */
+
 
         return result_avg_stddev
                 .join(result_min_max)
                 .mapValues(value -> new Tuple4<>(value._1._1(),value._1._2,value._2._1(), value._2._2()));
-
-
-
-        /*JavaPairRDD<String, Iterable<Tuple2<Integer, Iterable<Tuple2<Integer, Tuple4<Double, Double, Double, Double>>>>>> record = result
-                .mapToPair( t -> new Tuple2<>( new Tuple2<>(t._1._1(),t._1._3()), new Tuple2<>(t._1._2(),t._2()) ) )
-                .groupByKey()
-                .mapToPair(t -> new Tuple2<>(t._1._2(), new Tuple2<>(t._1._1(),t._2)))
-                .groupByKey();
-        JavaRDD<String> toJson = result
-                .map( tuple -> new Gson().toJson(tuple) );
-
-
-        //String json = new Gson.tojson(classe);
-        toJson.saveAsTextFile("results/query2/file" +fileType);*/
 
     }
 }

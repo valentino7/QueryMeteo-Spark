@@ -32,7 +32,6 @@ public class SQLQuery3 {
         fields.add(DataTypes.createStructField(Constants.COUNTRY_LABEL, DataTypes.StringType, true));
         fields.add(DataTypes.createStructField(Constants.CITY_LABEL, DataTypes.StringType, true));
         fields.add(DataTypes.createStructField(Constants.TEMPERATURE_LABEL, DataTypes.DoubleType, true));
-        //fields.add(DataTypes.createStructField("count", DataTypes.DoubleType, true));
 
         StructType schema = DataTypes.createStructType(fields);
 
@@ -59,7 +58,6 @@ public class SQLQuery3 {
                 "WHERE year >= 2016 AND ( (month >= 6 AND month <= 9) " +
                 "OR (month >= 1 AND month <= 4) ) AND (hour >= 12 AND hour <= 15)");
 
-        //filteredTable.show(50);
 
         filteredTable.createOrReplaceTempView("avgTemp1");
 
@@ -81,8 +79,6 @@ public class SQLQuery3 {
                 "FROM avgTemp2 " +
                 "WHERE month >= 6 AND month <= 9 " +
                 "GROUP BY year, country, city");
-
-        //avgTable2.show(50);
 
 
         avgTable1.createOrReplaceTempView("temp1");
@@ -125,10 +121,6 @@ public class SQLQuery3 {
                "GROUP BY year, country, city, sub_temp, rank");
 
 
-        //rank2016.show(50);
-        //topThree2017.show();
-
-
         rank2016.createOrReplaceTempView("rank2016");
         topThree2017.createOrReplaceTempView("rank2017");
 
@@ -141,7 +133,7 @@ public class SQLQuery3 {
                         "GROUP BY r1.year, r2.year, r1.country, r2.country, r1.city, r2.city, r1.rank, r2.rank, r1.sub_temp, r2.sub_temp " +
                         "ORDER BY r1.country, r2.rank");
 
-        //compareRanks.show();
+
 
 
     }

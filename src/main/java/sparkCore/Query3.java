@@ -69,15 +69,17 @@ public class Query3 {
                 K : tuple4 (Year,4Month,City,Country)  -> tuple3 (Year,City,Country)
                 V : same (Temp,Count)
 
-        .reduceByKey : calculate mean temperature differenze (in module) for same (Year,City,Country)
+        .reduceByKey : calculate mean temperature difference (in module) for same (Year,City,Country)
 
+
+        .mapToPair
+        .sortByKey
+        .mapToPair
+        : sort by temperature difference
+
+        .groupByKey : group by year and nation
          */
 
-
-
-
-        // ( anno, nazione, citta) -> valore
-        //( anno, nazione ) -> (Lista ordinata di città)
         JavaPairRDD<Tuple2<Integer, String>, Iterable<String>> result = temp
                 .mapValues(new Function<Tuple2<Double, Double>, Double>() {
                     @Override
@@ -102,36 +104,12 @@ public class Query3 {
                 .sortByKey(Comparator.reverseOrder())
                 .mapToPair(tuple -> new Tuple2<>(new Tuple2<>(tuple._2()._1(),tuple._2()._2()), tuple._2()._3()))
                 .groupByKey()
-                /* .mapToPair(tuple -> {
-                     if (tuple._1._1 == 2017){
-                         return new Tuple2<>(tuple._1._2(),new Tuple2<>(tuple._1._1(),Iterables.limit(tuple._2(),3)));
-                     }
-                     else {
-                         return new Tuple2<>(tuple._1._2(), new Tuple2<>(tuple._1._1(), tuple._2()));
-                     }
-                 })
-                 //.groupByKey()
-                 .mapValues( value -> {
-                     Rank ranking = new Rank();
-
-                     Iterable<String> tempValue = value._2;
-                     ranking.setYear(value._1());
-                     List<String> r = new ArrayList<>();
-                     while(tempValue.iterator().hasNext()) {
-                         r.add(tempValue.iterator().next());
-                     }
-                     ranking.setCityRank(r);
-                     return ranking;
-                 })
-                 .reduceByKey(new Function2<Rank, Rank, Rank>() {
-                     @Override
-                     public Rank call(Rank rank, Rank rank2) throws Exception {
-                         return null;
-                     }
-                 })*/
                 .cache();
 
+        /*
 
+         create rank2016 from result RDD
+         */
 
         JavaPairRDD<String, Iterable<String>> result2016 = result
                 .filter( t -> t._1()._1() == 2016)
@@ -148,6 +126,14 @@ public class Query3 {
         }
 
 
+        /*
+        .filter : take year 2017
+        .mapToPair : RDD<(year,nation), list<city> > to RDD<nation, list<city> >
+        .mapValues: take first 3 city for each nation
+        .mapToPair:  RDD<nation, list<city> > to RDD<nation, list<city,lastYearPosition> >
+
+         */
+
         return result
                 .filter( t -> t._1()._1() == 2017)
                 .mapToPair( t -> new Tuple2<>(t._1()._2(),t._2()))
@@ -157,27 +143,15 @@ public class Query3 {
                         return Iterables.limit(v1,3);
                     }
                 })
-                .mapToPair(new PairFunction<Tuple2<String, Iterable<String>>, String, List<Tuple2<String, Integer>>>() {
-                    @Override
-                    public Tuple2<String, List<Tuple2<String, Integer>>> call(Tuple2<String, Iterable<String>> v1) throws Exception {
+                .mapToPair((PairFunction<Tuple2<String, Iterable<String>>, String, List<Tuple2<String, Integer>>>) v1 -> {
 
-                        List<Tuple2<String, Integer>> listToreturn = new ArrayList<>();
-                        for (String s : v1._2()) {
-                            List<String> temp = rank2016list.get(v1._1());
-                            listToreturn.add(new Tuple2<>(s, temp.indexOf(s)+1));
-                        }
-                        return new Tuple2<>(v1._1(),listToreturn);
+                    List<Tuple2<String, Integer>> listToreturn = new ArrayList<>();
+                    for (String s : v1._2()) {
+                        List<String> temp1 = rank2016list.get(v1._1());
+                        listToreturn.add(new Tuple2<>(s, temp1.indexOf(s)+1));
                     }
+                    return new Tuple2<>(v1._1(),listToreturn);
                 })
                 .cache();
-
-
-        //GetTime
-        /*JavaRDD<String> toJson = result2017
-                .map(tuple -> new Gson().toJson(tuple));
-
-        toJson.saveAsTextFile(Constants.HDFS_MONGO_QUERY3);*/
-
-        //GetTime
     }
 }

@@ -8,7 +8,7 @@
     <artifactId>spark</artifactId>
     <version>1.0</version>
     <properties>
-        <framework.scope>compile</framework.scope>
+        <framework.scope>provided</framework.scope>
     </properties>
 
     <dependencies>
